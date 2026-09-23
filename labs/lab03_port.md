@@ -1,5 +1,7 @@
 # Week 3 — The S3 port and the first thread
-> **Reading:** [READINGS.md](../READINGS.md), week 3 · **Module:** 2
+> - **Reading:** [READINGS.md](../READINGS.md), week 3
+> - **Module:** 2
+> - **Firmware:** your week-2 `firmware/superloop/` (TASKs 1–3 filled in). Commit it before you start: today's first piece of evidence is a diff.
 
 **From:** Eng. Samuel Cifuentes — *"Two pieces of news. One: production picked the
 ESP32-S3 for the node — more memory, a radio, and two cores we'll use later. Two: I

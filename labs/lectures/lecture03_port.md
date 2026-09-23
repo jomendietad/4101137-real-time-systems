@@ -1,10 +1,13 @@
 # Week-3 talk — The scheduler: threads, priorities, preemption (40 min)
 
-**Precedes:** `labs/lab03_port.md` · **Audience:** students right before the lab.
+- **Precedes:** [lab03_port.md](../lab03_port.md)
+- **Audience:** students right before the lab.
 
 ## Objectives
-By the end, the student can: 1. explain what a devicetree overlay buys in a port;
-2. describe the RT-kernel anatomy (thread states, ready queue, context switch);
+By the end, the student can:
+
+1. explain what a devicetree overlay buys in a port.
+2. describe the RT-kernel anatomy (thread states, ready queue, context switch).
 3. map the superloop's polled sampling to a thread + message queue.
 
 ## Structure

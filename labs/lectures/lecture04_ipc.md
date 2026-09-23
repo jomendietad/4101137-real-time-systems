@@ -1,11 +1,14 @@
 # Week-4 talk — IPC: message queues, workqueues, ISR deferral (40 min)
 
-**Precedes:** `labs/lab04_ipc.md` · **Audience:** students right before the lab.
+- **Precedes:** [lab04_ipc.md](../lab04_ipc.md)
+- **Audience:** students right before the lab.
 
 ## Objectives
-By the end, the student can: 1. pick the right kernel primitive for each superloop
-pattern; 2. explain the short-ISR + deferral discipline; 3. read an A/B table by
-maxima, not averages.
+By the end, the student can:
+
+1. pick the right kernel primitive for each superloop pattern.
+2. explain the short-ISR + deferral discipline.
+3. read an A/B table by maxima, not averages.
 
 ## Structure
 | Min | Segment | Purpose in one line |

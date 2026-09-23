@@ -1,5 +1,6 @@
 # Week 4 — The full migration and the A/B
-> **Reading:** [READINGS.md](../READINGS.md), week 4 · **Module:** 2
+> - **Reading:** [READINGS.md](../READINGS.md), week 4
+> - **Module:** 2
 
 **From:** Eng. Samuel Cifuentes — *"Finish the migration and bring me the A/B: superloop vs. kernel, same tasks, same board, same conditions. That table decides the product architecture — and I'm the one defending it to Gustavo, so I want to be able to cite it without embarrassment. And one more thing: threads bring context switches, but they also bring stack overflows. Measure your high-water marks before we ship this."*
 
