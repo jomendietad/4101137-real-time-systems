@@ -40,7 +40,7 @@ copy of `nucleo_l476rg.overlay` and take the S3 pins from the table in
 | `&gpiob 3`, `&gpioa 8`, … (one node per port) | every pin lives on `&gpio0` |
 | `led0` is the board's LD2, already aliased | no plain LED on the devkit: add a `gpio-leds` node `valve_out` on GPIO21 and alias `led0` to it |
 | `&usart1`, `&pwm2`, `&pwm3` disabled | delete those lines — they are STM32 nodes and the S3 tree has no such labels |
-| SSD1306 under `&i2c1` | under `&i2c0`, which the S3 board leaves off: add `status = "okay";` |
+| SSD1306 under `&i2c1` | under `&i2c0` (SDA GPIO1 / SCL GPIO2), which the S3 board leaves off: add `status = "okay";` |
 
 ```bash
 west build -p -b esp32s3_devkitc/esp32s3/procpu firmware/superloop && west flash

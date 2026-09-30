@@ -49,11 +49,12 @@ that the code compiles, not that it runs.
 
 Pressure comes from a synthetic plant (it drifts toward whatever the valve
 commands), which is what weeks 2–4 measure against. To read a real pot instead,
-wire the wiper to the pot channel (S3 GPIO2 · C6 GPIO1 · Nucleo A0), the ends to
+wire the wiper to the pot channel (S3 GPIO9 · C6 GPIO1 · Nucleo A0), the ends to
 3V3 and GND, and build with the fragment for your board:
 
 ```bash
-west build ... -- -DEXTRA_DTC_OVERLAY_FILE=pot_esp32.overlay
+west build ... -- -DEXTRA_DTC_OVERLAY_FILE=pot_esp32s3.overlay
+west build ... -- -DEXTRA_DTC_OVERLAY_FILE=pot_esp32c6.overlay
 west build ... -- -DEXTRA_DTC_OVERLAY_FILE=pot_nucleo.overlay
 ```
 
@@ -70,7 +71,7 @@ The C0116-DK reads its on-board joystick and the pot without the fragment.
 ## Display (optional HMI)
 
 SSD1306 128×64 OLED on I²C. Default pins: Nucleo SDA PB9 / SCL PB8 (D14/D15),
-S3 SDA GPIO8 / SCL GPIO9, C6 SDA GPIO6 / SCL GPIO7. On the C0116-DK the font
+S3 SDA GPIO1 / SCL GPIO2, C6 SDA GPIO6 / SCL GPIO7 — the boards' own `i2c0` pins. On the C0116-DK the font
 tables overflow the 32 KB flash, so the HMI needs one of the larger boards.
 Three pages — dashboard / flow / health. Build with the fragment:
 

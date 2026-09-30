@@ -14,7 +14,7 @@ to give the instructor known-good numbers before class.
 | `main` | priority 0 | priority 10 (`CONFIG_MAIN_THREAD_PRIORITY`), so sampling preempts it |
 
 `status` adds `lat_peak_us`: the worst tick-to-thread-start latency, measured by
-the thread itself. Pins, console, `pot_esp32.overlay` and `display.conf` work as
+the thread itself. Pins, console, `pot_esp32s3.overlay` and `display.conf` work as
 in the superloop.
 
 ```bash
