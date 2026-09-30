@@ -58,9 +58,13 @@ does, check the file name.
 ### Task B — Two silicons, same code
 - Repeat the week-2 protocol on the S3 (same duration, same conditions); fill in
   the *S3 superloop* column, including the control-period row.
-- The S3 runs at 240 MHz against the L476's 80 MHz, but it executes from
-  external SPI flash through a cache, where a miss costs far more than an ART
-  miss on the L476. Which effect wins in your table? Two sentences in the RET.
+- The idle max changed a lot between chips. Put `instr_tele` side by side on
+  both captures: which hardware difference explains it? (Read how each chip's
+  UART driver sends one character: `uart_stm32_poll_out` vs.
+  `uart_esp32_poll_out` in `zephyr/drivers/serial/`.)
+- The S3 runs at 240 MHz against the L476's 80 MHz, but executes from external
+  SPI flash through a cache. Where in your RET do clock and cache show up, if not
+  in the max? Two sentences for both answers.
 - **Evidence:** comparison table + captures.
 
 ### Task C — The first thread

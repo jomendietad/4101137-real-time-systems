@@ -297,7 +297,7 @@ static void task_control(void)
 }
 
 /* Every FLOW_BATCH pulses: convert the accumulated count to L/min and smooth
- * it. Float math, in the middle of the loop, on a core without an FPU. */
+ * it. Float math, in the middle of the loop, soft-float (CONFIG_FPU is off). */
 static void task_flow_batch(void)
 {
 	if (atomic_get(&flow_pulses) < FLOW_BATCH) {
