@@ -15,7 +15,7 @@ to give the instructor known-good numbers before class.
 
 `status` adds `lat_peak_us`: the worst tick-to-thread-start latency, measured by
 the thread itself. Pins, console, `pot_esp32s3.overlay` and `display.conf` work as
-in the superloop.
+in the superloop. Week 4 finishes the migration in [../kernel/](../kernel/).
 
 ```bash
 west build -p -b esp32s3_devkitc/esp32s3/procpu firmware/sampling_thread && west flash
