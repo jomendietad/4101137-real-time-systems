@@ -18,7 +18,7 @@ By the end, the student can:
 | 17–28 | EDF and Fig. 4.13 | dynamic priorities buy exactness; the famous miss |
 | 28–33 | Jitter meets control | why the loop degrades before it misses |
 | 33–37 | What about FreeRTOS? | fixed priorities only — design to pass RM |
-| 37–40 | Bridge to the lab | reproduce 4.13 on our board; inject jitter |
+| 37–40 | Bridge to the lab | reproduce 4.13 on our board; inject jitter; fix `calib` and the e-stop |
 
 ## Segment 1 — Utilization and the RM tests
 - Key idea: U = ΣC_i/T_i with *measured* C_i is the load; the tests are verdicts on
@@ -57,5 +57,11 @@ book spends half a chapter on RM.
 
 ## Bridge to the lab
 Two experiments: Fig. 4.13 live (RM misses, flip to EDF, it meets — two captures)
-and the jitter-injection rig on the flow loop. Problem Set 1 goes out today; the
-math from this talk is exactly the math it drills.
+and the jitter-injection rig on the flow loop. Then Task D: two requirements no
+utilization test covers. `calib` spins ≈ 400 ms at the bottom of the priority
+list against a 1 s deadline, and the e-stop waits for control; each fix is one
+line. *For you:* with the example Daniela tasks the threads above the console
+hold U ≈ 0.72, leaving ≈ 280 ms of each second for a 401 ms `calib`; after
+`k_usleep` it needs ≈ 2 ms of CPU. The e-stop path is ≤ 1 + 10 + 1 ≈ 12 ms as
+shipped and ≈ 1 ms fixed. Next week's RTA puts exact numbers on both. Problem
+Set 1 goes out today; the math from this talk is exactly the math it drills.
