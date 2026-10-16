@@ -1,79 +1,11 @@
 ---
 marp: true
----
-
-<!--
+theme: course
 paginate: true
 title: Tracing
 style: |
-  section {
-    font-family: 'Inter', 'Segoe UI', 'DejaVu Sans', Arial, sans-serif;
-    font-size: 26px;
-    padding: 50px 64px;
-    background: linear-gradient(180deg, #ffffff 0%, #ffffff 82%, #f0fdfa 100%);
-    color: #0f172a;
-  }
-  h1 { color: #0d9488; }
-  h2 {
-    color: var(--accent, #0d9488);
-    border-bottom: 6px solid var(--accent, #0d9488);
-    padding-bottom: 6px;
-    margin-bottom: 18px;
-  }
-  header {
-    background: var(--accent, #0d9488);
-    color: #fff;
-    font-weight: 700;
-    font-size: 18px;
-    padding: 4px 14px;
-    border-radius: 0 0 10px 10px;
-    left: 64px;
-    top: 0;
-  }
-  section::after { color: var(--accent, #0d9488); font-weight: 700; }
-  img { display: block; margin: 0 auto; }
-  strong { color: var(--accent, #0d9488); }
-  table { font-size: 22px; margin: 0 auto; }
-  th { background: var(--accent, #0d9488); color: #fff; }
-  blockquote {
-    border-left: 10px solid var(--accent, #0d9488);
-    background: #f8fafc;
-    padding: 14px 22px;
-    border-radius: 0 12px 12px 0;
-    color: #0f172a;
-  }
-  code { background: #f1f5f9; }
-  pre { font-size: 19px; }
-  section.lead {
-    background: linear-gradient(135deg, #0d9488 0%, #2563eb 55%, #7c3aed 100%);
-    color: #fff;
-    justify-content: center;
-  }
-  section.lead h1 { color: #fff; font-size: 64px; }
-  section.lead strong { color: #fde68a; }
-  section.lead::after { color: #fff; }
-  section.why    { --accent: #ea580c; }
-  section.pipe   { --accent: #2563eb; }
-  section.setup  { --accent: #16a34a; }
-  section.read   { --accent: #0d9488; }
-  section.cost   { --accent: #e11d48; }
-  section.rtos   { --accent: #7c3aed; }
-  section.use    { --accent: #d97706; }
-  section.verdict {
-    --accent: #db2777;
-    background: linear-gradient(135deg, #fdf2f8 0%, #ede9fe 100%);
-  }
-  section.verdict blockquote { font-size: 30px; background: #fff; }
-  section.agenda ol li { margin: 8px 0; padding-left: 6px; }
-  section.agenda ol li::marker { font-weight: 800; }
-  section.agenda ol li:nth-child(1)::marker, section.agenda ol li:nth-child(1) strong { color: #ea580c; }
-  section.agenda ol li:nth-child(2)::marker, section.agenda ol li:nth-child(2) strong { color: #2563eb; }
-  section.agenda ol li:nth-child(3)::marker, section.agenda ol li:nth-child(3) strong { color: #16a34a; }
-  section.agenda ol li:nth-child(4)::marker, section.agenda ol li:nth-child(4) strong { color: #0d9488; }
-  section.agenda ol li:nth-child(5)::marker, section.agenda ol li:nth-child(5) strong { color: #e11d48; }
-  section.agenda ol li:nth-child(6)::marker, section.agenda ol li:nth-child(6) strong { color: #7c3aed; }
-  section.agenda ol li:nth-child(7)::marker, section.agenda ol li:nth-child(7) strong { color: #d97706; }
--->
+  section { --course: #0d9488; }
+---
 
 <!-- _class: lead -->
 <!-- _paginate: false -->
@@ -111,7 +43,7 @@ The colored tag at the top of each slide tells you which part you're in.
 
 ---
 
-<!-- _class: why -->
+<!-- _class: s1 -->
 <!-- _header: 1 · Why -->
 
 ## Same moment, two instruments
@@ -128,7 +60,7 @@ slow instruction all look like the same flat line.
 
 ---
 
-<!-- _class: why -->
+<!-- _class: s1 -->
 <!-- _header: 1 · Why -->
 
 ## What only the trace answers
@@ -149,7 +81,7 @@ Course rule from today: **numbers from the analyzer, story from the trace.**
 
 ---
 
-<!-- _class: pipe -->
+<!-- _class: s2 -->
 <!-- _header: 2 · Pipeline -->
 
 ## From kernel hook to timeline
@@ -168,7 +100,7 @@ same idea with a debug probe reading the buffer out of RAM.
 
 ---
 
-<!-- _class: pipe -->
+<!-- _class: s2 -->
 <!-- _header: 2 · Pipeline -->
 
 ## CTF: a binary log with a schema
@@ -199,7 +131,7 @@ last sentence: it bites us on the "Build, capture, view" slide.
 
 ---
 
-<!-- _class: setup -->
+<!-- _class: s3 -->
 <!-- _header: 3 · Setup -->
 
 ## Two jacks, two jobs
@@ -219,7 +151,7 @@ mix with printk. Weeks 3–4 used only the UART jack; today both are plugged in.
 
 ---
 
-<!-- _class: setup -->
+<!-- _class: s3 -->
 <!-- _header: 3 · Setup -->
 
 ## Turn it on: two files, no C
@@ -250,7 +182,7 @@ week 4: it is what puts names on the lanes.
 
 ---
 
-<!-- _class: setup -->
+<!-- _class: s3 -->
 <!-- _header: 3 · Setup -->
 
 ## Build, capture, view
@@ -277,7 +209,7 @@ gives a text dump on any version. The metadata gap is upstream commit a672a717ca
 
 ---
 
-<!-- _class: read -->
+<!-- _class: s4 -->
 <!-- _header: 4 · Reading -->
 
 ## One tick, one preemption
@@ -296,7 +228,7 @@ firmware. Ask:
 
 ---
 
-<!-- _class: cost -->
+<!-- _class: s5 -->
 <!-- _header: 5 · Cost -->
 
 ## The price of looking: bandwidth
@@ -320,7 +252,7 @@ part of the demo.
 
 ---
 
-<!-- _class: cost -->
+<!-- _class: s5 -->
 <!-- _header: 5 · Cost -->
 
 ## The price of looking: time
@@ -339,7 +271,7 @@ They are the truth as perturbed by tracing. Trace widths and GPIO widths differ 
 
 ---
 
-<!-- _class: rtos -->
+<!-- _class: s6 -->
 <!-- _header: 6 · FreeRTOS -->
 
 ## What about FreeRTOS?
@@ -355,7 +287,7 @@ They are the truth as perturbed by tracing. Trace widths and GPIO widths differ 
 
 ---
 
-<!-- _class: verdict -->
+<!-- _class: takeaway -->
 <!-- _header: Verdict -->
 
 ## Verdict
@@ -368,7 +300,7 @@ They are the truth as perturbed by tracing. Trace widths and GPIO widths differ 
 
 ---
 
-<!-- _class: use -->
+<!-- _class: s7 -->
 <!-- _header: Demo -->
 
 ## Demo: one `calib`, traced
@@ -390,7 +322,7 @@ If the USB jack can't keep up, events drop: show it, that's the bandwidth slide 
 
 ---
 
-<!-- _class: use -->
+<!-- _class: s7 -->
 <!-- _header: 7 · Use it -->
 
 ## From lab 6 on
