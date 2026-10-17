@@ -35,10 +35,11 @@ instr_ctrl rising, and we *called* it a context switch. Today we watch it happen
 6. **FreeRTOS**: same idea, other tools
 7. **Use it**: from lab 6 on
 
-The colored tag at the top of each slide tells you which part you're in.
+Goal: read a preemption in a trace, and price the tracer.
 
 <!--
-1:00–1:30. About 20 minutes of slides, then the live demo on the node.
+1:00–1:30. About 20 minutes of slides, then the live demo on the node. The colored
+tag at the top of each slide says which part we're in.
 -->
 
 ---
@@ -73,10 +74,9 @@ slow instruction all look like the same flat line.
 | Why did control start late? | — | who was ready, who had the CPU |
 | Does measuring change the system? | no | **yes** |
 
-Course rule from today: **numbers from the analyzer, story from the trace.**
-
 <!--
-3:30–5:00. The last row is the whole of part 5. Keep it on the board.
+3:30–5:00. The last row is the whole of part 5. Write the course rule on the
+board and leave it there: numbers from the analyzer, story from the trace.
 -->
 
 ---
@@ -228,6 +228,26 @@ firmware. Ask:
 
 ---
 
+<!-- _class: s4 question -->
+<!-- _header: 4 · Reading -->
+
+## At event 5, sampling runs. What is the console?
+
+1. Blocked: it waits for `tick_q`
+2. Ready: preempted, it still wants the CPU
+3. Suspended by the tick ISR until the ISR returns
+4. Running on the other core
+
+<!--
+16:00–17:30. Vote, one minute in pairs, vote again. Answer: 2. It was running
+(spinning in calib) when the tick arrived; preemption moves it to ready. 1 confuses
+it with sampling, which is the thread that blocks on tick_q. 3 confuses ISR entry
+with a thread state: the ISR is long gone by event 5. 4: the node runs on PROCPU
+only until week 9.
+-->
+
+---
+
 <!-- _class: s5 -->
 <!-- _header: 5 · Cost -->
 
@@ -239,15 +259,15 @@ firmware. Ask:
 | Ring buffer, 2 KB | full in ≈ 4 ms if not drained | |
 | A 115200 UART, for scale | | ≈ 11.5 KB/s |
 
-Six events per tick carry a 20-byte thread name (switches, ready, pend): ≈ 200 of the ≈ 500 bytes. Filtering `SYSCALL` and `TIMER` saved ≈ 13 %.
-
-Trace **seconds, not minutes**, and expect **drops**: a full buffer loses whole events, so a lane with a missing switch is a gap, not a bug.
+Trace **seconds, not minutes**, and expect **drops**: a lane with a missing switch is a gap, not a bug.
 
 <!--
-16:00–17:30. Counted from a native_sim capture of this firmware, median of 100
-ticks: 26 events / 600 B unfiltered, 22 / 524 B filtered. The S3 will be close:
-the 1 kHz tick sets the event mix, not the chip. Whether the USB jack keeps up is
-part of the demo.
+17:30–19:00. Six events per tick carry a 20-byte thread name (switches, ready,
+pend): ≈ 200 of the ≈ 500 bytes. Filtering SYSCALL and TIMER saved ≈ 13 %. A full
+buffer loses whole events. Counted from a native_sim capture of this firmware,
+median of 100 ticks: 26 events / 600 B unfiltered, 22 / 524 B filtered. The S3
+will be close: the 1 kHz tick sets the event mix, not the chip. Whether the USB
+jack keeps up is part of the demo.
 -->
 
 ---
@@ -257,16 +277,37 @@ part of the demo.
 
 ## The price of looking: time
 
-- Each event is formatted with **interrupts locked** (`CTF_EVENT` → `irq_lock()`): a tick that fires meanwhile waits.
-- ≈ 20 of them per tick, inside and around the very latency you're measuring.
-- The tracing thread drains at the **lowest priority**: it eats idle time, so a CPU-load figure read off the trace includes the tracer.
+- Each event is formatted with **interrupts locked**: a tick that fires meanwhile waits.
+- ≈ 20 of them per tick, around the very latency you're measuring.
+- The tracer drains at the **lowest priority**: trace CPU-load figures include it.
 
-> Measure the cost with the instrument that has none: sampling jitter on the **analyzer**, tracing on vs. off.
+> Measure the cost with the instrument that has none: the **analyzer**, tracing on vs. off.
 
 <!--
-17:30–19:00. Misconception to anticipate: "trace timestamps are ground truth".
+19:00–20:30. The lock is in CTF_EVENT → irq_lock(). Misconception to anticipate: "trace timestamps are ground truth".
 They are the truth as perturbed by tracing. Trace widths and GPIO widths differ by
 µs both ways: GPIO includes gpio_pin_set_dt, the trace includes its own formatting.
+-->
+
+---
+
+<!-- _class: s5 question -->
+<!-- _header: 5 · Cost -->
+
+## The trace says sampling ran 52 µs; the analyzer says 48 µs. What goes in RET §1?
+
+1. 52 µs: the trace sees every instruction
+2. 48 µs: the analyzer doesn't perturb the node
+3. 50 µs: average the two instruments
+4. 52 µs: the larger one is the safe worst case
+
+<!--
+20:30–22:00. Vote, pairs, vote. Answer: 2, with "analyzer" in the instrument
+column. 1 trusts the trace timestamps as ground truth: they include the tracer's
+own formatting under irq_lock. 3 averages a perturbed number with a clean one. 4
+sounds conservative but the 4 µs are the tracer's, not sampling's; the margin for
+the worst case comes from the measurement protocol, not from a perturbed
+instrument.
 -->
 
 ---
@@ -276,13 +317,13 @@ They are the truth as perturbed by tracing. Trace widths and GPIO widths differ 
 
 ## What about FreeRTOS?
 
-- Same idea: the kernel calls trace macros (`traceTASK_SWITCHED_IN()`, `traceQUEUE_SEND()`…) that stay empty until a recorder fills them.
-- Recorders: **Percepio Tracealyzer** (commercial) or **SEGGER SystemView** (free for non-commercial use), usually through a debug probe.
-- On the S3 under ESP-IDF, the app_trace library streams SystemView data over the same built-in USB-JTAG.
+- Same idea: trace macros (`traceTASK_SWITCHED_IN()`, …) stay empty until a recorder fills them.
+- Recorders: **Percepio Tracealyzer** (commercial) or **SEGGER SystemView** (free for non-commercial use).
+- On the S3 under ESP-IDF, app_trace streams SystemView over the same USB-JTAG.
 - What Zephyr adds: an **open format** (CTF) and free viewers.
 
 <!--
-19:00–20:00.
+22:00–23:00. Both recorders usually read the target through a debug probe.
 -->
 
 ---
@@ -295,7 +336,7 @@ They are the truth as perturbed by tracing. Trace widths and GPIO widths differ 
 > **The analyzer is the witness; the trace is the suspect's own story.** Take numbers from the analyzer and explanations from the trace, and never quote a trace timestamp without a capture beside it.
 
 <!--
-20:00–20:30.
+23:00–23:30.
 -->
 
 ---
@@ -305,14 +346,14 @@ They are the truth as perturbed by tracing. Trace widths and GPIO widths differ 
 
 ## Demo: one `calib`, traced
 
-1. Flash the traced build: console on the UART jack, capture on the USB jack.
-2. Start the capture, type `calib` on the console, wait 2 s, Ctrl-C.
-3. In the viewer, find the console lane busy-waiting; zoom on one tick and name events 1–8.
-4. Find a 10th tick: `k_sem_give`, then the switch to control instead of the console.
-5. Count `switched_in` against `switched_out`: equal, or did the link drop events?
+1. Traced build: console on the UART jack, capture on the USB jack.
+2. Capture, type `calib`, wait 2 s, Ctrl-C.
+3. Find the console busy-waiting; zoom on one tick, name events 1–8.
+4. A 10th tick: `k_sem_give`, then the switch to control.
+5. Count `switched_in` against `switched_out`: did the link drop events?
 
 <!--
-20:30–28:00. Dry-run on your own board first:
+23:30–31:00. Dry-run on your own board first:
 - /dev/ttyACM0 appears when the USB jack is plugged in.
 - trace/channel0_0 grows while the capture runs.
 - The viewer's lanes run past the first second (if they stop early, the metadata
@@ -331,13 +372,12 @@ If the USB jack can't keep up, events drop: show it, that's the bandwidth slide 
 |---|---|
 | 6 · Fig. 4.13 | see τ2 still *ready* when its deadline passes under RM |
 | 6 · Task D | see `calib` spin (busy-wait events), then sleep once fixed |
-| 6 · tracing cost | (analyzer, not trace) sampling jitter with tracing on vs. off |
 | 7 · inversion | see who holds the lock while control waits |
-
-Add `trace.conf` and `usb_trace.overlay` to any app; the third file is the metadata patch.
 
 **Numbers from the analyzer, story from the trace.**
 
 <!--
-28:00–30:00. All three files live in firmware/kernel/.
+31:00–33:00. Add trace.conf and usb_trace.overlay to any app; the third file is
+the metadata patch. All three live in firmware/kernel/; SOP-05 has the commands.
+Then the bridge: the lab's table, predictions due before the boards come out.
 -->

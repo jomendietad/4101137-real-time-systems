@@ -57,7 +57,8 @@ By the end, the student can:
 ## Segment 4 — How the project runs
 - Key idea: today nobody codes — four ADRs defended against the evidence in their
   own RETs; checkpoint targets declared as *numbers* with load conditions, not
-  "progress". Weeks 14–15 checkpoints, week 16 demo day: live demo + final RET +
+  "progress". The fifth, the CAN bus design, closes after next week's talk on CAN
+  response-time analysis. Weeks 14–15 checkpoints, week 16 demo day: live demo + final RET +
   honest postmortem (the 5 rubric points for admitting what fell short).
 
 ## Bridge to the lab

@@ -18,13 +18,15 @@ the Hub can hold hard duties."*
 
 ## What you'll measure
 
-| Measurement (`cyclictest`, ≥ 5 min each) | Max (µs) | p99 (µs) |
-|---|---|---|
-| Stock kernel, no load | ____ | ____ |
-| Stock kernel, **under load** (`stress-ng` + traffic) | ____ | ____ |
-| PREEMPT_RT kernel, no load | ____ | ____ |
-| PREEMPT_RT kernel, under load | ____ | ____ |
-| PREEMPT_RT, under load, **powersave governor** (DFS penalty) | ____ | ____ |
+Hand in the prediction column before the lab.
+
+| Measurement (`cyclictest`, ≥ 5 min each) | Predicted max (µs) | Max (µs) | p99 (µs) |
+|---|---|---|---|
+| Stock kernel, no load | ____ | ____ | ____ |
+| Stock kernel, **under load** (`stress-ng` + traffic) | ____ | ____ | ____ |
+| PREEMPT_RT kernel, no load | ____ | ____ | ____ |
+| PREEMPT_RT kernel, under load | ____ | ____ | ____ |
+| PREEMPT_RT, under load, **powersave governor** (DFS penalty) | ____ | ____ | ____ |
 
 ## Tasks
 

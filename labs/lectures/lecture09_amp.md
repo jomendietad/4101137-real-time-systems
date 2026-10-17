@@ -36,7 +36,8 @@ By the end, the student can:
 - Key idea: global = one scheduler migrates tasks across cores (best average
   utilization, migration jitter, shared-cache interference); partitioned = tasks
   pinned per core, each core analyzed alone with everything from weeks 6–7.
-  Zephyr's Xtensa port has no SMP, so today is partitioned *by construction*:
+  Zephyr has no SMP on the S3 (only on the original ESP32), so today is
+  partitioned *by construction*:
   AMP via sysbuild, one image per core, hard loop alone on APPCPU (no console
   there — GPIO is the instrument, as always).
 - **Board sketch:** two boxes per model; under partitioned, write "RTA valid per
@@ -53,11 +54,11 @@ By the end, the student can:
   industry default: high-water mark under stress + engineering margin. The RET's
   C_i column is route three; today's stress thread is what makes the high-water
   mark honest.
-- **Question for the room:** why is static WCET *easier* on the C0116 than on the
-  S3? (Week 3's jitter answer, resurfacing: caches.)
+- **Question for the room:** why is static WCET *easier* on the L476 with its cache
+  off (week 2) than on the S3? (Caches: the S3 fetches from external flash through one.)
 
 ## Bridge to the lab
-Two builds: the flow sensor becomes a real driver behind a devicetree binding, and
-sysbuild produces two images. Then the three-case table — expect the maxima, not
+Sysbuild produces two images; then the three-case table. Expect the maxima, not
 the averages, to tell the story; ADR-003 must cite the cost too (two images, no
-APPCPU console). Problem Set 2 is due today.
+APPCPU console). The flow-sensor driver is a stretch for groups that finish early.
+Problem Set 2 is due today.

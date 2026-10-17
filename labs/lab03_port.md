@@ -17,13 +17,15 @@ first thread."*
 
 ## What you'll measure
 
-| Measurement | L476RG (wk 2) | S3 superloop | S3 + sampling thread |
-|---|---|---|---|
-| Max sampling jitter, ≥ 30 s | (copy) | ____ µs | ____ µs |
-| Max sampling jitter, `calib` active | (copy) | ____ µs | ____ µs |
-| `backlog_peak`, `calib` active | (copy) | ____ ticks | ____ ticks |
-| `lat_peak_us` (tick → thread start, firmware's own count) | — | — | ____ µs |
-| Max control period (`instr_ctrl`), `calib` active | — | ____ ms | ____ ms |
+Hand in the prediction column before the lab.
+
+| Measurement | L476RG (wk 2) | Prediction, S3 superloop | S3 superloop | S3 + sampling thread |
+|---|---|---|---|---|
+| Max sampling jitter, ≥ 30 s | (copy) | ____ µs | ____ µs | ____ µs |
+| Max sampling jitter, `calib` active | (copy) | ____ µs | ____ µs | ____ µs |
+| `backlog_peak`, `calib` active | (copy) | ____ ticks | ____ ticks | ____ ticks |
+| `lat_peak_us` (tick → thread start, firmware's own count) | — | | — | ____ µs |
+| Max control period (`instr_ctrl`), `calib` active | — | ____ ms | ____ ms | ____ ms |
 
 ## Tasks
 

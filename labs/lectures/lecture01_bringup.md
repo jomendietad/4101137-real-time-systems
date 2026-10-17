@@ -81,7 +81,8 @@ By the end, the student can:
 ## Segment 5 — The toolchain map
 - One toolchain the whole semester: Zephyr — `west` (build/flash), CMake,
   devicetree (hardware described as data; week 3 shows why that matters).
-  Two boards: STM32C0116-DK now (lent), ESP32-S3 from week 3 (theirs).
+  Two boards: the NUCLEO-L476RG now (theirs from the prerequisite courses, lent
+  if not), the ESP32-S3 from week 3.
   `native_sim` builds on the laptop for logic; never for timing numbers.
 - FreeRTOS: appears every single week as the industry comparison — nothing to
   install, everything to compare. Week 9 is its dedicated session.

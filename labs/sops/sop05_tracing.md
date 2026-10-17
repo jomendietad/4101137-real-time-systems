@@ -1,90 +1,82 @@
-# SOP-05 — Zephyr tracing on the node (SystemView / CTF)
+# SOP-05 — CTF tracing on the node, over the USB jack
 
 - **Serves:** [lab05_tracing.md](../lab05_tracing.md)
-- **Hardware:** ESP32-S3 DevKitC; Route A needs a SEGGER J-Link probe, Route B needs only the USB cable + a spare UART.
+- **Hardware:** ESP32-S3 DevKitC with **both** jacks plugged in: console on the UART
+  jack, trace on the USB jack (the S3's built-in USB-Serial-JTAG). No probe, no adapter.
+- **Firmware:** [firmware/kernel/](../../firmware/kernel/) or your week-4 node, plus
+  its three tracing files: `trace.conf`, `usb_trace.overlay`, `ctf_sleep_events.tsdl`.
 
-Steps, checks, and troubleshooting only — the *why* lives in the lab.
+Steps, checks and troubleshooting only; the *why* is in the
+[week-5 deck](../presentations/05_tracing.md).
 
-> **Draft** — commands pending validation on course hardware.
+## 1. Build and flash the traced node
 
-Both routes need named threads:
-
-```ini
-CONFIG_THREAD_NAME=y
-```
-
-## Route A — SystemView over RTT (J-Link probe)
-
-### A1. Enable it
-
-```ini
-CONFIG_TRACING=y
-CONFIG_SEGGER_SYSTEMVIEW=y
-CONFIG_USE_SEGGER_RTT=y
-CONFIG_SEGGER_SYSVIEW_RTT_BUFFER_SIZE=8192
-```
-
-Rebuild and flash the node as usual.
-
-### A2. Capture
-
-1. Wire the J-Link to the S3's JTAG pins (MTMS/MTDI/MTCK/MTDO + GND); power stays USB.
-2. Open **SEGGER SystemView** → Target → Start Recording; device `ESP32-S3`,
-   interface JTAG.
-
-**Verify:** the thread lanes appear with your thread names (`control`, `sampling`,
-`console`…), events streaming.
-
-## Route B — CTF over UART (no probe)
-
-### B1. Enable it
-
-```ini
-CONFIG_TRACING=y
-CONFIG_TRACING_CTF=y
-CONFIG_TRACING_BACKEND_UART=y
-```
-
-Point tracing at a UART that is **not** the console (second USB-UART adapter on two
-free pins), via a devicetree overlay:
-
-```dts
-/ {
-    chosen {
-        zephyr,tracing-uart = &uart1;
-    };
-};
-```
-
-### B2. Capture the raw stream
+Copy the three tracing files into your app if it isn't `firmware/kernel`, then:
 
 ```bash
-# capture ~60 s of raw CTF bytes (adjust the tty)
-timeout 60 cat /dev/ttyUSB1 > channel0_0
+west build -p -b esp32s3_devkitc/esp32s3/procpu firmware/kernel -- \
+  -DEXTRA_CONF_FILE=trace.conf -DEXTRA_DTC_OVERLAY_FILE=usb_trace.overlay
+west flash
 ```
 
-### B3. Convert and view
+With the pot: `-DEXTRA_DTC_OVERLAY_FILE="pot_esp32s3.overlay;usb_trace.overlay"`.
+
+**Verify:** `ls /dev/ttyACM*` lists the USB jack (usually `/dev/ttyACM0`), and the
+console on the UART jack still answers `status`.
+
+## 2. Capture
 
 ```bash
-sudo apt install babeltrace2 python3-bt2
-mkdir trace && cp channel0_0 trace/
+mkdir -p trace
+python $ZEPHYR_BASE/scripts/tracing/trace_capture_uart.py \
+  -d /dev/ttyACM0 -b 115200 -o trace/channel0_0
+```
+
+The script sends `enable`, so the stream starts on an event boundary. Do what you
+want to trace (e.g. type `calib` on the console), wait 1–2 s, then Ctrl-C. The USB
+jack ignores the baud rate; the script still requires `-b`.
+
+**Verify:** `ls -l trace/channel0_0` grows while the capture runs.
+
+## 3. Metadata
+
+```bash
 cp $ZEPHYR_BASE/subsys/tracing/ctf/tsdl/metadata trace/
-babeltrace2 trace/ > trace.txt        # text timeline
+grep -q sleep_ticks trace/metadata || cat firmware/kernel/ctf_sleep_events.tsdl >> trace/metadata
 ```
 
-For a graphical timeline, open the `trace/` directory in **Eclipse TraceCompass**
-(File → Open Trace).
+The second line adds two `k_sleep` events the pinned Zephyr emits but doesn't
+describe; without them decoding stops at the first `k_msleep`.
 
-**Verify:** `trace.txt` shows `thread_switched_in` / `thread_switched_out` events
-with your thread names and monotonic timestamps.
+**Verify:** `grep -c sleep_ticks trace/metadata` prints a number above 0.
+
+## 4. View
+
+```bash
+python $ZEPHYR_BASE/scripts/tracing/trace_viewer.py --metadata trace/metadata trace/channel0_0
+python $ZEPHYR_BASE/scripts/tracing/trace_viewer.py --metadata trace/metadata --text trace/channel0_0 > trace.txt
+```
+
+For a graphical timeline, open the `trace/` directory in Eclipse TraceCompass
+(File → Open Trace). `babeltrace2 trace/` gives a text dump on any Zephyr version.
+
+**Verify:** the lanes carry your thread names (`sampling_tid`, `control_tid`, …) and
+run past the first second; `trace.txt` shows `thread_switched_in` /
+`thread_switched_out` events with increasing timestamps.
+
+## 5. Tracing off, for the overhead row
+
+Rebuild without `trace.conf` and `usb_trace.overlay` (the plain week-4 build) and
+measure sampling jitter on the analyzer with the usual protocol.
 
 ## Troubleshooting
 
-| Symptom | Likely cause | Fix |
+| Symptom | Cause | Fix |
 |---|---|---|
-| SystemView connects but no events | RTT buffer overflow at high event rate | Increase `CONFIG_SEGGER_SYSVIEW_RTT_BUFFER_SIZE`; lower the event rate (`CONFIG_TRACING_ISR=n` if ISR events flood) |
-| Threads show as addresses, not names | `CONFIG_THREAD_NAME` missing | Add it and rebuild |
-| `babeltrace2` errors on the trace | Missing/mismatched `metadata`, or bytes lost on UART | Re-copy `metadata` from *your* Zephyr checkout; lower the trace UART baud; re-capture |
-| Garbage mixed into the CTF file | Tracing sharing the console UART | Use a separate UART (the overlay above); never trace over the console |
-| J-Link doesn't see the S3 | JTAG pins wrong or claimed by the app | Check MTMS=42, MTDI=41, MTCK=39, MTDO=40 on the DevKitC; free those pins in the overlay |
-| Trace timestamps look compressed/wrong | Timer frequency mismatch in viewer | In SystemView set the CPU frequency to the S3's actual clock (240 MHz default) |
+| No `/dev/ttyACM*` | USB jack not plugged, or charge-only cable | Plug the jack marked USB with a data cable |
+| `Permission denied` on `/dev/ttyACM0` | User not in `dialout` | `sudo usermod -aG dialout $USER`, log out and in |
+| Lanes stop after a fraction of a second | Metadata without the sleep events | Step 3, second line |
+| Everything after some point decodes as garbage | Capture joined mid-event, or an event id missing from the metadata | Restart the capture (the script re-sends `enable`); re-copy the metadata from the pinned Zephyr |
+| A switch in without its switch out | Ring buffer full: whole events dropped | Expected at 1 kHz: trace seconds, not minutes; treat the gap as a gap |
+| Threads shown as addresses | `CONFIG_THREAD_NAME` off | It is on in `firmware/kernel/prj.conf`; check your own `prj.conf` |
+| Trace bytes in the console | Tracing pointed at the console UART | Keep `usb_trace.overlay`: tracing goes to `usb_serial`, never `uart0` |

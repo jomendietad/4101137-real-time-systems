@@ -18,11 +18,13 @@ Today follows the book's ch. 12 almost to the letter (pthread + the ptask patter
 
 ## What you'll measure
 
-| Measurement (10 ms loop, ≥ 5 min) | Misses | Max jitter (µs) |
-|---|---|---|
-| `SCHED_FIFO` prio 90, quiet system | ____ | ____ |
-| `SCHED_FIFO` prio 90 + **FIFO hog at prio 95** | ____ | ____ |
-| `SCHED_DEADLINE` (runtime 2 ms / period 10 ms) + the same hog | ____ | ____ |
+Hand in the prediction column before the lab.
+
+| Measurement (10 ms loop, ≥ 5 min) | Predicted misses | Misses | Max jitter (µs) |
+|---|---|---|---|
+| `SCHED_FIFO` prio 90, quiet system | ____ | ____ | ____ |
+| `SCHED_FIFO` prio 90 + **FIFO hog at prio 95** | ____ | ____ | ____ |
+| `SCHED_DEADLINE` (runtime 2 ms / period 10 ms) + the same hog | ____ | ____ | ____ |
 
 ## Tasks
 

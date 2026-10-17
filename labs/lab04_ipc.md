@@ -22,14 +22,16 @@ kernel counterpart.
 
 ## What you'll measure
 
-| Measurement (S3) | S3 superloop (wk 3) | Kernel (today) |
-|---|---|---|
-| Max sampling jitter | (copy) | ____ µs |
-| Max sampling jitter with `calib` | (copy) | ____ µs |
-| Max control period with `calib` | (copy) | ____ ms |
-| ISR → thread latency (`lat_peak_us`) | — | ____ µs |
-| Visible context-switch gap (Task C) | — | ____ µs |
-| Control thread stack high-water mark | — | ____ bytes / ____ allocated |
+Hand in the prediction column before the lab.
+
+| Measurement (S3) | S3 superloop (wk 3) | Prediction, kernel | Kernel (today) |
+|---|---|---|---|
+| Max sampling jitter | (copy) | ____ µs | ____ µs |
+| Max sampling jitter with `calib` | (copy) | ____ µs | ____ µs |
+| Max control period with `calib` | (copy) | ____ ms | ____ ms |
+| ISR → thread latency (`lat_peak_us`) | — | ____ µs | ____ µs |
+| Visible context-switch gap (Task C) | — | ____ µs | ____ µs |
+| Control thread stack high-water mark | — | ____ bytes | ____ bytes / ____ allocated |
 
 ## Tasks
 

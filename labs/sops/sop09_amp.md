@@ -28,15 +28,16 @@ Two apps, one sysbuild:
 amp_node/
 ├── app_procpu/          # rest of the node + synthetic load
 │   ├── CMakeLists.txt
-│   ├── prj.conf         # includes CONFIG_ESP_APPCPU=y (boots the second core)
+│   ├── prj.conf         # CONFIG_IPM=y: PROCPU starts the APPCPU only with IPM on
+│   ├── app.overlay      # &ipm0 { status = "okay"; };
 │   └── sysbuild.cmake
 └── app_appcpu/          # hard loop + its instrumentation GPIO, nothing else
     ├── CMakeLists.txt
     └── prj.conf
 ```
 
-`app_procpu/sysbuild.cmake` registers the second image (copy the pattern from the
-`ipm_esp32` sample's `sysbuild.cmake`):
+`app_procpu/sysbuild.cmake` registers the second image and builds it first, as the
+`ipm_esp32` sample does (PROCPU's image needs the APPCPU image's load address):
 
 ```cmake
 ExternalZephyrProject_Add(
@@ -44,7 +45,11 @@ ExternalZephyrProject_Add(
     SOURCE_DIR ${APP_DIR}/../app_appcpu
     BOARD esp32s3_devkitc/esp32s3/appcpu
 )
+add_dependencies(app_procpu app_appcpu)
+sysbuild_add_dependencies(CONFIGURE app_procpu app_appcpu)
 ```
+
+The first argument of both lines is the PROCPU app's `project()` name.
 
 ## 3. Build, flash, run
 
@@ -71,7 +76,7 @@ Remove it before measuring — it perturbs the loop. Measurement is by GPIO, as 
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| APPCPU GPIO never toggles | Second core not started | `CONFIG_ESP_APPCPU=y` (name per your Zephyr version — check the `ipm_esp32` sample's procpu `prj.conf`) in the **procpu** image; confirm sysbuild built both (`build/app_appcpu/` exists) |
+| APPCPU GPIO never toggles | Second core not started | PROCPU starts it only with IPM enabled: `CONFIG_IPM=y` and `&ipm0 { status = "okay"; };` in the **procpu** image; confirm sysbuild built both (`build/app_appcpu/` exists) |
 | `west flash` writes only one image | Built without `--sysbuild` | Rebuild with `--sysbuild`; flash from the sysbuild build dir |
 | Build fails resolving the appcpu image | Path/board typo in `sysbuild.cmake` | `SOURCE_DIR` relative to `${APP_DIR}`; board is `.../esp32s3/appcpu` |
 | Both cores fight over a pin | Same GPIO claimed in both DTs | Give each image its own overlay; keep pin maps disjoint |

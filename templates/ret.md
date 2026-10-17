@@ -42,6 +42,14 @@ U = ΣC_i/T_i with **measured** C_i; test used (RM / hyperbolic / EDF); RTA as a
 script with its output; blocking B_i if there are mutexes. (Formulas: READINGS.md,
 "The math that does get used".)
 
+From week 14: the CAN frame plan (IDs, periods, sizes), bus utilization and each
+frame's response time; then the end-to-end budget of each requirement that crosses
+the bus, hop by hop:
+
+| Requirement | Node `R` | CAN `R` | Hub wake-up (max) | Actuation | Sum | Deadline | Measured end to end |
+|---|---|---|---|---|---|---|---|
+| e-stop → pump stop | ____ | ____ | ____ | ____ | ____ | 20 ms | ____ |
+
 ## 5. Functional safety (final project)
 
 Declared safe state (failure ⇒ valve closed), watchdog, and the evidence of the

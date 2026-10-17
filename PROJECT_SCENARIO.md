@@ -6,31 +6,6 @@
 
 ---
 
-## 📌 TL;DR
-
-**Your role**: Firmware Engineer on GreenField Technologies' new **Control
-Systems team** (a fictional agri-tech startup).
-
-**The context**: GreenField already sells **SoilSense**, a soil-sensor mesh
-network for small farms, built before you joined. But monitoring doesn't close
-the loop: farmers want irrigation to be **automated**. Your team builds the new
-product line:
-
-- **SoilSense Control** — real-time irrigation controller (ESP32-S3 + Zephyr):
-  flow/pressure control loop with a **hard** deadline, periodic sampling,
-  **soft** telemetry, **firm** console.
-- **SoilSense Hub** — Linux gateway with a local GUI (touchscreen) and a remote
-  dashboard, supervising the controllers. It's the final project (weeks 13–16).
-
-**Your deliverables**: professional ADRs and design records, plus **timing
-evidence**: schedulability analysis and measured latency/jitter tables. "It
-works" isn't enough — you have to show *when*.
-
-**Your mentor**: Eng. Samuel Cifuentes, who expects you to understand the
-"why" — and to show the numbers.
-
----
-
 ## 1. The Company
 
 **GreenField Technologies** is a fictional precision-agriculture startup for
@@ -69,8 +44,14 @@ and its real-time design is the heart of the final project. In the same box coex
 - **Local hard control**: the pump station's pressure loop and its safety
   interlock (`SCHED_FIFO`/`SCHED_DEADLINE`, CPU isolation).
 - **Local GUI** (touchscreen — e.g. LVGL or a web HMI) for field operation.
-- **Data routing**: telemetry from the Control nodes to the remote
-  dashboard/cloud, and commands back, with an end-to-end deadline budget.
+- **Data routing**: telemetry and alarms from the Control nodes arrive over a
+  **CAN bus**, the field bus of farm machinery (ISOBUS, ISO 11783, is CAN); the Hub
+  forwards them to the remote dashboard/cloud and sends commands back.
+
+The CAN bus makes one hard requirement cross three computers: *when a Control node
+trips its overpressure e-stop, the Hub shall stop the pump within 20 ms*. Its budget
+adds the node's response time, the frame's response time on the bus (CAN arbitrates
+by priority, so the bus has its own RTA), and the Hub's wake-up latency.
 
 **The design challenge**: prove the hard loop meets its deadlines *while* the GUI
 renders and the routing takes traffic bursts — with evidence (`cyclictest` and
@@ -100,21 +81,14 @@ design answer to Edwin's question ("what if the Hub goes down with a valve open?
 | **Edward** | Security | Attack surface | "Can a malicious remote command violate a deadline?" |
 | **Daniela** | Pilot customer | Usability, ROI | "Does the screen tell me what's going on without calling support?" |
 
-## 4. Project Phases (mapped to modules)
+## 4. Project Phases
 
-> **Draft — per-phase detail pending authoring.** Planned structure
-> (context → tasks → stakeholder questions → deliverables):
-
-1. **Phase 1 — Prototype and baseline** (modules 1–2 + module 4's tracing): the
-   Control node as a superloop, baseline measurement; rebuild with threads;
-   A/B against the baseline with instrumented tracing.
-2. **Phase 2 — Guarantees** (module 3): schedulability analysis of the Control
-   task set; priority inversion reproduced and fixed. *(Workshop: week 8.)*
-3. **Phase 3 — Measurement and drivers** (module 4): driver with a devicetree
-   binding, WCET, and multicore (partitioned AMP). The talk compares with
-   FreeRTOS: what if a customer demands the industry's kernel?
-4. **Phase 4 — The Hub** (modules 5–6): RT Linux in groups; final-project
-   kickoff, two checkpoints, and demo day with a timing-evidence report.
+| Phase | Weeks | What the team delivers |
+|---|---|---|
+| 1. Prototype and baseline | 1–5 | The node as a superloop and its jitter baseline; the same node on threads, A/B against it; the first traces |
+| 2. Guarantees | 6–8 | Schedulability analysis and RTA of the node's task set; priority inversion reproduced and fixed; the design review (week 8) |
+| 3. Two cores | 9 | The hard loop alone on the S3's second core, judged by its tail; FreeRTOS as the alternative a customer may demand |
+| 4. The Hub | 10–16 | RT Linux measured and isolated; the Hub designed, built and linked to the nodes over CAN; two checkpoints and demo day |
 
 ## 5. Documentation Standards
 

@@ -17,11 +17,13 @@ unmoved. That rig is, literally, the project's checkpoint 2."*
 
 ## What you'll measure
 
-| Measurement (10 ms loop, ≥ 5 min each) | Misses | Max jitter (µs) |
-|---|---|---|
-| DEADLINE loop, shared CPUs, full interference | ____ | ____ |
-| DEADLINE loop **+ affinity to an isolated CPU**, same interference | ____ | ____ |
-| Same as above + IRQs moved off the isolated CPU | ____ | ____ |
+Hand in the prediction column before the lab.
+
+| Measurement (10 ms loop, ≥ 5 min each) | Predicted max jitter (µs) | Misses | Max jitter (µs) |
+|---|---|---|---|
+| DEADLINE loop, shared CPUs, full interference | ____ | ____ | ____ |
+| DEADLINE loop **+ affinity to an isolated CPU**, same interference | ____ | ____ | ____ |
+| Same as above + IRQs moved off the isolated CPU | ____ | ____ | ____ |
 
 Full interference = synthetic render load (`glxgears`/`stress-ng --vm`) + network
 bursts (`iperf3` toward the SBC) — the Hub's GUI and routing, simulated.
