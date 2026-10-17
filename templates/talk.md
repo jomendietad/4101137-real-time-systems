@@ -1,11 +1,14 @@
 ---
 marp: true
+---
+
+<!--
 theme: course
 paginate: true
 title: <Talk title>
 style: |
   section { --course: #0d9488; }
----
+-->
 
 <!-- _class: lead -->
 <!-- _paginate: false -->

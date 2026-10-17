@@ -1,11 +1,14 @@
 ---
 marp: true
+---
+
+<!--
 theme: course
 paginate: true
 title: Tracing
 style: |
   section { --course: #0d9488; }
----
+-->
 
 <!-- _class: lead -->
 <!-- _paginate: false -->

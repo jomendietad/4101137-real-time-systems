@@ -1,12 +1,15 @@
 ---
 marp: true
+---
+
+<!--
 theme: course
 paginate: true
 title: Schedulability
 math: mathjax
 style: |
   section { --course: #0d9488; }
----
+-->
 
 <!-- _class: lead -->
 <!-- _paginate: false -->
