@@ -1,4 +1,5 @@
 # Week 4 — The full migration and the A/B
+> - **Talk:** [04_ipc](presentations/04_ipc.md)
 > - **Reading:** [READINGS.md](../READINGS.md), week 4
 > - **Module:** 2
 > - **Firmware:** your week-3 `firmware/superloop/` (S3 overlay + sampling thread) is the starting point. The A side of today's A/B is the *S3 superloop* column you measured in week 3.

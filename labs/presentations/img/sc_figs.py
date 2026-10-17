@@ -8,12 +8,9 @@ The schedules are simulated, not drawn: changing TASKS redraws Fig. 4.13 for any
 import math
 from pathlib import Path
 
+from figlib import C, GRID, INK, MUTED, T, svg, text
+
 HERE = Path(__file__).resolve().parent
-FONT = "Inter, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif"
-INK, MUTED, GRID = "#0f172a", "#475569", "#cbd5e1"
-C = {"c1": "#ea580c", "c2": "#2563eb", "c3": "#16a34a", "c4": "#0d9488",
-     "c5": "#e11d48", "c6": "#7c3aed", "c7": "#d97706", "c8": "#db2777"}
-T = {"c3": "#dcfce7", "c5": "#ffe4e6", "c6": "#ede9fe", "c7": "#fef3c7"}
 
 TASKS = [("τ1", 2, 5, "c6"), ("τ2", 4, 7, "c7")]  # Buttazzo Fig. 4.13: (name, C, T, color)
 
@@ -47,16 +44,6 @@ def simulate(tasks, policy, horizon):
             if j["left"] > 0 and j["deadline"] == t + 1:
                 misses.append((j["task"], t + 1))
     return timeline, misses, preempted
-
-
-def svg(w, h, body):
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" font-family="{FONT}">\n'
-            + "\n".join(body) + "\n</svg>\n")
-
-
-def text(x, y, s, size=18, weight=400, fill=INK, anchor="start"):
-    return (f'<text x="{x}" y="{y}" text-anchor="{anchor}" font-size="{size}" '
-            f'font-weight="{weight}" fill="{fill}">{s}</text>')
 
 
 def fig413():

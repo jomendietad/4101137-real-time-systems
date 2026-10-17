@@ -1,4 +1,5 @@
 # Week 10 — PREEMPT_RT: Linux enters the loop
+> - **Talk:** [10_preempt_rt](presentations/10_preempt_rt.md)
 > - **Tech guide:** [SOP-10](sops/sop10_preempt_rt.md)
 > - **Reading:** [READINGS.md](../READINGS.md), week 10
 > - **Module:** 5

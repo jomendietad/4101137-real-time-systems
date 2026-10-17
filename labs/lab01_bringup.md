@@ -1,4 +1,5 @@
 # Week 1 — Bring-up: the team, the board, the toolchain
+> - **Talk:** [01_why_real_time](presentations/01_why_real_time.md)
 > - **Reading:** [READINGS.md](../READINGS.md), week 1
 > - **Module:** 0
 > - **Prerequisite:** [setup.md](setup.md) done at home.

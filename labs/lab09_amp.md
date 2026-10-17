@@ -1,4 +1,5 @@
 # Week 9 — The two cores (AMP)
+> - **Talk:** [09_freertos_multicore_wcet](presentations/09_freertos_multicore_wcet.md)
 > - **Tech guide:** [SOP-09](sops/sop09_amp.md)
 > - **Reading:** [READINGS.md](../READINGS.md), week 9
 > - **Module:** 4

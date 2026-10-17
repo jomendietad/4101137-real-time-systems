@@ -5,11 +5,9 @@
 """
 from pathlib import Path
 
+from figlib import C, GRID, INK, MUTED, T, svg, text
+
 HERE = Path(__file__).resolve().parent
-FONT = "Inter, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif"
-INK, MUTED, GRID = "#0f172a", "#475569", "#cbd5e1"
-C = {"c2": "#2563eb", "c3": "#16a34a", "c5": "#e11d48", "c7": "#d97706"}
-T = {"c2": "#dbeafe", "c3": "#dcfce7", "c5": "#ffe4e6", "c7": "#fef3c7"}
 
 NODES = [("e-stop, node 1", 0x010, "c5"), ("telemetry, node 1", 0x012, "c3"), ("command, Hub", 0x100, "c2")]
 BITRATE = 500_000
@@ -29,16 +27,6 @@ def can_response_us(c_us, b_max_us, hp=()):
         if nxt == w:
             return w + c_us
         w = nxt
-
-
-def svg(w, h, body):
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" font-family="{FONT}">\n'
-            + "\n".join(body) + "\n</svg>\n")
-
-
-def text(x, y, s, size=20, weight=400, fill=INK, anchor="start"):
-    return (f'<text x="{x}" y="{y}" text-anchor="{anchor}" font-size="{size}" '
-            f'font-weight="{weight}" fill="{fill}">{s}</text>')
 
 
 def arbitration():

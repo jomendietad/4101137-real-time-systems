@@ -1,4 +1,5 @@
 # Week 3 — The S3 port and the first thread
+> - **Talk:** [03_scheduler](presentations/03_scheduler.md)
 > - **Reading:** [READINGS.md](../READINGS.md), week 3
 > - **Module:** 2
 > - **Firmware:** your week-2 `firmware/superloop/` (TASKs 1–3 filled in). Commit it before you start: today's first piece of evidence is a diff.

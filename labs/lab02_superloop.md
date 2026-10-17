@@ -1,4 +1,5 @@
 # Week 2 — The provided superloop: run, read, measure
+> - **Talk:** [02_vocabulary](presentations/02_vocabulary.md)
 > - **Reading:** [READINGS.md](../READINGS.md), week 2
 > - **Module:** 1
 > - **Firmware:** [firmware/superloop/](../firmware/superloop/) (provided — you complete three marked pieces; nothing is invented today)

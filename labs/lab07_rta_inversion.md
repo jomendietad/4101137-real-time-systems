@@ -1,4 +1,5 @@
 # Week 7 — RTA and priority inversion
+> - **Talk:** [07_rta_inversion](presentations/07_rta_inversion.md)
 > - **Reading:** [READINGS.md](../READINGS.md), week 7
 > - **Module:** 3
 > - **Problem Set 2 goes out today** (exercises from ch. 7 + RTA; due week 9).

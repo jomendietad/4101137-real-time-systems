@@ -1,4 +1,5 @@
 # Week 11 — Periodic tasks in Linux: from CBS to SCHED_DEADLINE
+> - **Talk:** [11_sched_deadline](presentations/11_sched_deadline.md)
 > - **Reading:** [READINGS.md](../READINGS.md), week 11
 > - **Module:** 5
 

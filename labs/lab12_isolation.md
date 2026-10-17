@@ -1,4 +1,5 @@
 # Week 12 — Isolation and interference: the Hub's dress rehearsal
+> - **Talk:** [12_isolation](presentations/12_isolation.md)
 > - **Tech guide:** [SOP-10](sops/sop10_preempt_rt.md), §5
 > - **Reading:** [READINGS.md](../READINGS.md), week 12
 > - **Module:** 5

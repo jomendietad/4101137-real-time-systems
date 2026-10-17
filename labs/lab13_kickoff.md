@@ -1,4 +1,5 @@
 # Week 13 — SoilSense Hub kickoff
+> - **Talk:** [13_kickoff](presentations/13_kickoff.md)
 > - **Reading:** [READINGS.md](../READINGS.md), week 13
 > - **Module:** 6
 > - Also covers the checkpoints (wks 14–15) and demo day (wk 16).
