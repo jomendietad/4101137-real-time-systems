@@ -7,7 +7,7 @@
 <polyline points="200,170 700,170 700,130 900,130 900,170 1240,170" fill="none" stroke="#ea580c" stroke-width="3"/>
 <line x1="566" y1="132" x2="694" y2="132" stroke="#ea580c" stroke-width="2" marker-end="url(#ar)"/>
 <line x1="694" y1="132" x2="566" y2="132" stroke="#ea580c" stroke-width="2" marker-end="url(#ar)"/>
-<text x="630" y="122" text-anchor="middle" font-size="18" font-weight="700" fill="#ea580c">≈ 4 µs of what?</text>
+<text x="630" y="122" text-anchor="middle" font-size="18" font-weight="700" fill="#ea580c">≈ 6 µs of what?</text>
 <line x1="40" y1="205" x2="1240" y2="205" stroke="#cbd5e1" stroke-width="2"/>
 <text x="40" y="245" text-anchor="start" font-size="22" font-weight="700" fill="#0d9488">Trace: decisions</text>
 <text x="40" y="306" text-anchor="start" font-size="18" font-weight="400" fill="#475569">idle</text>

@@ -7,12 +7,12 @@ out=${BUILD_ROOT:-build/ci}
 mkdir -p "$out"
 fail=0
 
-build() {  # app board [cmake args...]
+build() {  # app board [cmake args...]; SB=1 builds with sysbuild
 	local app=$1 board=$2
 	shift 2
 	local name
 	name="$(basename "$app")-${board//\//_}${*:+-$(echo "$*" | md5sum | cut -c1-6)}"
-	if west build -p -b "$board" "$app" -d "$out/$name" -- "$@" >"$out/$name.log" 2>&1; then
+	if west build -p ${SB:+--sysbuild} -b "$board" "$app" -d "$out/$name" -- "$@" >"$out/$name.log" 2>&1; then
 		echo "ok    $app  $board  $*"
 	else
 		echo "FAIL  $app  $board  $*  (log: $out/$name.log)"
@@ -35,5 +35,7 @@ build firmware/kernel $S3
 build firmware/kernel $S3 -DEXTRA_CONF_FILE=trace.conf -DEXTRA_DTC_OVERLAY_FILE=uart_trace.overlay
 build firmware/kernel $S3 -DEXTRA_DTC_OVERLAY_FILE=can_esp32s3.overlay
 build firmware/kernel native_sim/native/64 -DCONFIG_THREAD_ANALYZER=n
+SB=1 build firmware/amp_node/app_procpu $S3
+SB=1 build firmware/amp_node/app_procpu $S3 -Dapp_appcpu_EXTRA_CONF_FILE=iram.conf
 
 exit $fail

@@ -20,7 +20,7 @@ style: |
 The analyzer sees pins. The trace sees decisions.
 
 <!--
-0:00–1:00. Last week's Task C: a ≈ 4 µs gap between instr_samp falling and
+0:00–1:00. Last week's Task C: a ≈ 6 µs gap between instr_samp falling and
 instr_ctrl rising, and we *called* it a context switch. Today we watch it happen.
 -->
 
@@ -55,7 +55,7 @@ tag at the top of each slide says which part we're in.
 ![h:430](img/tr_two_views.svg)
 
 <!--
-1:30–3:30. Top: last week's capture. Ask: "What happened in those 4 µs?" They'll
+1:30–3:30. Top: last week's capture. Ask: "What happened in those 6 µs?" They'll
 say "a context switch". Bottom: sampling gives control's semaphore, control
 becomes ready but can't preempt (priority 3 vs. 2), sampling blocks on tick_q,
 and only then does the scheduler switch. On the analyzer, a switch, an ISR and a
@@ -72,7 +72,7 @@ slow instruction all look like the same flat line.
 | Question | Analyzer | Trace |
 |---|---|---|
 | How long did sampling run? | exact | close, but perturbed |
-| What filled the 4 µs gap? | — | `k_sem_give`, pend, switch |
+| What filled the 6 µs gap? | — | `k_sem_give`, pend, switch |
 | Who ran during `calib`'s 400 ms? | only the pins you toggle | every thread, by name |
 | Why did control start late? | — | who was ready, who had the CPU |
 | Does measuring change the system? | no | **yes** |

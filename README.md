@@ -109,7 +109,7 @@ builds and runs on `native_sim`, for work without a board. Every push builds all
 | Path | What it is |
 |---|---|
 | [labs/](labs/README.md) | Lab guides, talks (Marp decks in `presentations/`), SOPs |
-| [firmware/](firmware/) | Course-authored reference apps: `superloop/` (week 2), `sampling_thread/` (week 3), `kernel/` (week 4 on) |
+| [firmware/](firmware/) | Course-authored reference apps: `superloop/` (week 2), `sampling_thread/` (week 3), `kernel/` (week 4 on), `amp_node/` (week 8 and the project) |
 | [templates/](templates/) | Lab, talk, SOP and RET templates |
 | [PROJECT_SCENARIO.md](PROJECT_SCENARIO.md) · [READINGS.md](READINGS.md) · [BOM.md](BOM.md) | The GreenField briefing, the reading guide, the parts list |
 

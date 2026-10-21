@@ -42,8 +42,11 @@ Hand in the prediction column before the lab.
 - Implement the task set of the book's Fig. 4.13: τ1 (C = 2 ms, T = 5 ms) and τ2
   (C = 4 ms, T = 7 ms), "computation" being a calibrated busy-wait, one
   instrumentation GPIO per task. Run with RM priorities; capture the miss.
-- Switch to EDF (`CONFIG_SCHED_DEADLINE=y`, same static priority,
-  `k_thread_deadline_set` each period). Verify it meets for 60 s.
+- Switch to EDF (`CONFIG_SCHED_DEADLINE=y`, same static priority for both). Before
+  each thread blocks until its next release, give it that job's absolute deadline
+  (`k_thread_absolute_deadline_set`). Set after the wake-up, the deadline comes too
+  late: the thread was already chosen with the old one, and the run looks like RM.
+  Verify it meets for 60 s.
 - **Evidence:** two analyzer captures: the miss under RM, the success under EDF.
 
 ### Task B — The inversion, then the fix
@@ -83,7 +86,8 @@ Then fix both where the time goes:
    the PWM step a few lines below drives the valve low in the same job.
 
 - `instr_cons` now stays high while the console sleeps, so its width is the
-  duration, not the CPU: take the CPU from a week-5 trace.
+  duration, not the CPU: take the CPU from a week-5 trace, as one settle's CPU
+  × 1000. The 1000 sleeps flood the link, so the trace keeps only some of them.
 - Redo the fit question and the e-stop sum for the new design.
 - **Evidence:** the before/after rows, an e-stop capture of each, and both sums.
 

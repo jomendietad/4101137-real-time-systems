@@ -130,9 +130,12 @@ APPCPU with no console there (GPIO is the instrument, as always).
 4. Nothing: one core was enough
 
 <!--
-17:00–19:00. Answer: 3. Misconceptions: "two cores, twice the capacity" (1, 2).
-Averages barely move; what a dedicated core buys is the tail: the spikes that came
-from sharing. Row 4 of the lab's table exists to force this reading.
+17:00–19:00. Answer: 3, with a catch the lab will show. Misconceptions: "two
+cores, twice the capacity" (1, 2). Averages barely move; what a dedicated core buys
+is the tail. Measured on the S3 (2026-10-21), max jitter over 60 s: one core
+2.25 µs; APPCPU alone 0.25 µs. But with a load streaming from flash on PROCPU the
+APPCPU loop reached 12–21 µs, worse than sharing one core (10.5 µs): the cores
+still share the flash cache. With the hard path in IRAM it is 0.25 µs again.
 -->
 
 ---
@@ -176,7 +179,7 @@ what ran before it.
 
 ## The one thing to remember
 
-> A dedicated core doesn't make the loop faster; it removes the spikes that came from sharing. Judge it by the max.
+> A dedicated core doesn't make the loop faster; it removes the spikes that came from sharing the CPU. Whatever the cores still share, like the S3's flash cache, keeps its spikes. Judge it by the max.
 
 <!--
 26:00–27:00.
@@ -192,6 +195,7 @@ what ran before it.
 1. Both cores alive: the `ipm_esp32` sample, one flash
 2. The split: the hard path on APPCPU, everything else on PROCPU, IPM between them
 3. The tail table, with a synthetic load, and the inter-core hop
+4. The hard path in internal RAM: the last row
 
 Predict the maxima now. Each step's check passes before anyone moves on.
 

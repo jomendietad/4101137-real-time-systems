@@ -133,12 +133,15 @@ running here, as it will on the S3.
 - Priorities change at run time, job by job
 - Exact test for $D_i = T_i$: schedulable **iff** $U \le 1$
 - Optimal: if any algorithm meets every deadline, EDF does
-- In Zephyr: `CONFIG_SCHED_DEADLINE=y`, then `k_thread_deadline_set()` each period
+- In Zephyr: `CONFIG_SCHED_DEADLINE=y`; set each job's deadline **before** blocking for its release
 
 <!--
 13:00–15:00. Optimality: Buttazzo §3.3.1, statement only. Zephyr's EDF orders
 threads of the same static priority by deadline; that's how the lab runs it. The
-deadline is relative to now, so it must be set again at every release. Why
+trap, found on the S3: a thread woken with last job's deadline wins with it, and
+setting the new one after the wake-up doesn't reschedule. Set the next absolute
+deadline (k_thread_absolute_deadline_set) before sleeping, or the run looks like
+RM. Why
 industry still ships RM: it is what a fixed-priority kernel does for free.
 -->
 

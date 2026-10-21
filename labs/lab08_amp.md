@@ -23,10 +23,11 @@ right call, because some customer will demand it."*
 | Time | Activity |
 |---|---|
 | 0:00–0:40 | Talk |
-| 0:40–1:10 | **Step 1**, all together: both cores alive from one flash |
-| 1:10–2:00 | **Step 2**: the node, split across the cores |
-| 2:00–2:40 | **Step 3**: the tail table and the inter-core hop |
-| 2:40–3:00 | ADR-003 drafted; what changes in the project |
+| 0:40–1:05 | **Step 1**, all together: both cores alive from one flash |
+| 1:05–1:50 | **Step 2**: the node, split across the cores |
+| 1:50–2:30 | **Step 3**: the tail table and the inter-core hop |
+| 2:30–2:45 | **Step 4**: the hard path in internal RAM, last row |
+| 2:45–3:00 | ADR-003 drafted; what changes in the project |
 
 The instructor builds each step on the projector first; pairs follow on their own
 board and don't move on until the step's check passes.
@@ -47,9 +48,11 @@ board and don't move on until the step's check passes.
 - **Check:** the console shows PROCPU's requests and APPCPU's replies, from one `west flash`.
 
 ### Step 2 — The node, split
-- Two apps under one sysbuild (SOP-08 §2–3): the APPCPU image carries the hard path
-  in the table above, with no console; the PROCPU image keeps the rest and adds a
-  **synthetic load**, a thread that walks a buffer larger than the cache.
+- Two apps under one sysbuild (SOP-08 §2–3), built from your week-4 node with
+  [firmware/amp_node/](../firmware/amp_node/) as the reference: the APPCPU image
+  carries the hard path in the table above, with no console; the PROCPU image keeps
+  the rest and adds a **synthetic load** (`load on`), a thread that streams a 64 KB
+  table out of flash.
 - The e-stop path keeps ADR-005: sampling drives the valve low in the same job, on
   APPCPU, then tells PROCPU over IPM.
 - **Check:** `instr_samp` toggles at 1 kHz while the console answers `status`;
@@ -65,8 +68,15 @@ case; compare **maxima**, not averages.
 | Max loop jitter, 1 core, no load | | ____ µs | reference (wk 4) |
 | Max loop jitter, 1 core, **with synthetic load** | ____ µs | ____ µs | the week-4 build plus the load thread |
 | Max loop jitter on APPCPU, load on PROCPU | ____ µs | ____ µs | partitioned |
-| Averages of all three cases | ____ | ____ | |
-| Inter-core hop: `instr_samp` at detection → PROCPU's IPM handler, max of 5 trips | ____ µs | ____ µs | a GPIO on each side |
+| Max loop jitter on APPCPU in IRAM, load on PROCPU | ____ µs | ____ µs | step 4 |
+| Averages of all four cases | ____ | ____ | |
+| Inter-core hop: the detecting `instr_samp` pulse → `instr_ipm` (GPIO18), max of 5 trips | ____ µs | ____ µs | a GPIO on each side |
+
+### Step 4 — The hard path in internal RAM
+- Row 3 may surprise you. The two cores share the flash cache, so a load streaming
+  from flash on PROCPU stalls APPCPU's instruction fetches. Rebuild with
+  `iram.conf` (SOP-08 §4) and fill the last jitter row.
+- **Check:** `sampling_thread` sits at a `0x403…` address in the APPCPU's ELF.
 
 ### Stretch (optional) — The flow sensor as a driver
 - Turn the YF-S401 reading into a minimal Zephyr driver: its own devicetree binding
@@ -95,5 +105,5 @@ silicon", Zephyr.
 
 - **§3 Week-8 evidence:** the table above + a one-sentence reading.
 - **§2 ADR-003 — Does the hard loop live on its own core?** (draft) Decision backed
-  by the tail numbers; include the cost: two images, no console on APPCPU, the
-  inter-core hop.
+  by the tail numbers, IRAM row included; the cost: two images, no console on
+  APPCPU, the inter-core hop, the IRAM it occupies.
