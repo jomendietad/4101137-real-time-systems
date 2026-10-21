@@ -32,7 +32,7 @@ build firmware/superloop native_sim/native/64
 build firmware/sampling_thread $S3
 build firmware/sampling_thread $S3 -DEXTRA_CONF_FILE=display.conf -DEXTRA_DTC_OVERLAY_FILE=pot_esp32s3.overlay
 build firmware/kernel $S3
-build firmware/kernel $S3 -DEXTRA_CONF_FILE=trace.conf -DEXTRA_DTC_OVERLAY_FILE=usb_trace.overlay
+build firmware/kernel $S3 -DEXTRA_CONF_FILE=trace.conf -DEXTRA_DTC_OVERLAY_FILE=uart_trace.overlay
 build firmware/kernel $S3 -DEXTRA_DTC_OVERLAY_FILE=can_esp32s3.overlay
 build firmware/kernel native_sim/native/64 -DCONFIG_THREAD_ANALYZER=n
 

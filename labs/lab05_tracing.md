@@ -30,14 +30,15 @@ Hand in the prediction column before the lab.
 ## Tasks
 
 ### Task A — Enable tracing
-- Stream CTF out of the S3's USB jack (SOP-05): two build files, no C changes. The
-  console stays on the UART jack.
+- Stream CTF out of the S3's UART jack at 4 Mbaud (SOP-05): two build files, no C
+  changes. In this build the console moves to the USB jack.
 - **Evidence:** first trace open in the viewer, with the node's threads named.
 
 ### Task B — The story of one preemption
 - Type `calib` and capture 1–2 s. Find one tick inside it and name the chain: tick
-  ISR → `k_msgq_put` → sampling ready → console preempted (ready, not blocked) →
-  sampling runs → `k_msgq_get` blocks → back to the console.
+  ISR → sampling ready (the ISR's `k_msgq_put`) → console preempted (ready, not
+  blocked) → sampling runs (`instr_samp` rises) → sampling pends (its `k_msgq_get`
+  blocks) → back to the console. Only the first ≈ 75 ms of `calib` survive: why?
 - Find a 10th tick: where does `k_sem_give` send the CPU instead?
 - Note the timestamps and compare against the GPIO measurement and `lat_peak_us`.
 - **Evidence:** annotated trace screenshot (arrows over the events).

@@ -29,15 +29,15 @@
 <circle cx="60" cy="414" r="13" fill="#2563eb"/><text x="60" y="420" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">1</text>
 <text x="82" y="420" text-anchor="start" font-size="17" font-weight="400" fill="#0f172a">isr_enter: the 1 kHz tick</text>
 <circle cx="60" cy="448" r="13" fill="#2563eb"/><text x="60" y="454" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">2</text>
-<text x="82" y="454" text-anchor="start" font-size="17" font-weight="400" fill="#0f172a">msgq_put_enter → thread_sched_ready(sampling)</text>
+<text x="82" y="454" text-anchor="start" font-size="17" font-weight="400" fill="#0f172a">thread_sched_ready(sampling): the ISR's k_msgq_put</text>
 <circle cx="60" cy="482" r="13" fill="#2563eb"/><text x="60" y="488" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">3</text>
-<text x="82" y="488" text-anchor="start" font-size="17" font-weight="400" fill="#0f172a">msgq_put_exit · isr_exit</text>
+<text x="82" y="488" text-anchor="start" font-size="17" font-weight="400" fill="#0f172a">the ISR returns into the scheduler (no event)</text>
 <circle cx="60" cy="516" r="13" fill="#2563eb"/><text x="60" y="522" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">4</text>
 <text x="82" y="522" text-anchor="start" font-size="17" font-weight="400" fill="#0f172a">thread_switched_out(console) → switched_in(sampling)</text>
 <circle cx="660" cy="414" r="13" fill="#2563eb"/><text x="660" y="420" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">5</text>
-<text x="682" y="420" text-anchor="start" font-size="17" font-weight="400" fill="#0f172a">msgq_get_exit: sampling starts its job</text>
+<text x="682" y="420" text-anchor="start" font-size="17" font-weight="400" fill="#0f172a">gpio_port_set_bits_raw(GPIO4): instr_samp rises</text>
 <circle cx="660" cy="448" r="13" fill="#2563eb"/><text x="660" y="454" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">6</text>
-<text x="682" y="454" text-anchor="start" font-size="17" font-weight="400" fill="#0f172a">msgq_get_enter → blocking → thread_sched_pend</text>
+<text x="682" y="454" text-anchor="start" font-size="17" font-weight="400" fill="#0f172a">thread_sched_pend(sampling): k_msgq_get blocks</text>
 <circle cx="660" cy="482" r="13" fill="#2563eb"/><text x="660" y="488" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">7</text>
 <text x="682" y="488" text-anchor="start" font-size="17" font-weight="400" fill="#0f172a">thread_switched_out(sampling) → switched_in(console)</text>
 <circle cx="660" cy="516" r="13" fill="#2563eb"/><text x="660" y="522" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">8</text>

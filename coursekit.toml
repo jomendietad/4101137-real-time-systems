@@ -33,3 +33,4 @@ isr = "c8"
 
 # Session number = "date · toolchain · hardware" of the last full run.
 [validated]
+"5" = "2026-10-21 · Zephyr 2f0bc11, SDK 1.0.1 · ESP32-S3 N16R8 (CH343 bridge), fx2lafw 8-ch analyzer"

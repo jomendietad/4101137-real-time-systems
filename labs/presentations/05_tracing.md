@@ -143,13 +143,16 @@ last sentence: it bites us on the "Build, capture, view" slide.
 
 | Tempting route | Why not on our board |
 |---|---|
-| SystemView over RTT (J-Link) | Zephyr has no RTT on Espressif chips: Kconfig refuses it |
-| CTF over `uart1` | the board routes its TX to GPIO17, our `instr_disp` |
+| SystemView over RTT (J-Link) | Zephyr has no RTT on Espressif chips |
+| CTF over the USB jack | one byte per USB packet: ≈ 60 KiB/s, an eighth of what we need |
 
 <!--
-9:00–10:30. The USB jack is the S3's built-in USB-Serial-JTAG: full-speed USB, no
-adapter, no baud rate. Never trace over the console UART: the trace bytes would
-mix with printk. Weeks 3–4 used only the UART jack; today both are plugged in.
+9:00–10:30. For this build the jacks swap jobs. The USB jack is the S3's built-in
+USB-Serial-JTAG: fine for a console, but its driver flushes every byte as its own
+USB packet, and we measured ≈ 60 KiB/s. The UART jack's bridge runs at 4 Mbaud,
+≈ 390 KiB/s. Never trace over the console's port: the trace bytes would mix with
+printk. uart1 is no way out either: the board routes its TX to GPIO17, our
+instr_disp.
 -->
 
 ---
@@ -160,27 +163,32 @@ mix with printk. Weeks 3–4 used only the UART jack; today both are plugged in.
 ## Turn it on: two files, no C
 
 ```ini
-# firmware/kernel/trace.conf
+# firmware/kernel/trace.conf (abridged)
 CONFIG_TRACING=y
 CONFIG_TRACING_CTF=y
 CONFIG_TRACING_BACKEND_UART=y
-CONFIG_TRACING_HANDLE_HOST_CMD=y   # wait for the capture script's "enable"
-CONFIG_TRACING_SYSCALL=n
-CONFIG_TRACING_TIMER=n
+CONFIG_TRACING_HANDLE_HOST_CMD=y         # wait for the capture script's "enable"
+CONFIG_TRACING_MESSAGE_QUEUE=n           # + SYSCALL, TIMER, IDLE: fit the link
+CONFIG_TRACING_THREAD_WAIT_THRESHOLD=1   # drain now, not 100 ms later
+CONFIG_TRACING_BUFFER_SIZE=32768
 ```
 
 ```c
-/* firmware/kernel/usb_trace.overlay */
-/ { chosen { zephyr,tracing-uart = &usb_serial; }; };
+/* firmware/kernel/uart_trace.overlay */
+/ { chosen { zephyr,console = &usb_serial; zephyr,tracing-uart = &uart0; }; };
 &usb_serial { status = "okay"; };
+&uart0 { current-speed = <4000000>; };
 ```
 
 <!--
 10:30–11:30. HANDLE_HOST_CMD keeps tracing off until the host sends "enable", so
 the capture starts on an event boundary: a capture joined mid-stream starts
-mid-event and nothing after it decodes. The two =n lines drop events we don't
-read (part 5 shows how little that saves). CONFIG_THREAD_NAME is already on from
-week 4: it is what puts names on the lanes.
+mid-event and nothing after it decodes. The =n lines bring the trace to ≈ 0.37
+MB/s, under the link's 0.39; a k_msgq call still shows as the ready or the pend it
+causes. The last two lines matter most: by default the tracer wakes 100 ms after
+the first event, behind a 2 KB buffer that our node fills in ≈ 4 ms, so one 4 ms
+slice in every 100 ms survives.
+CONFIG_THREAD_NAME is already on from week 4: it is what puts names on the lanes.
 -->
 
 ---
@@ -192,10 +200,9 @@ week 4: it is what puts names on the lanes.
 
 ```bash
 west build -p -b esp32s3_devkitc/esp32s3/procpu firmware/kernel -- \
-  -DEXTRA_CONF_FILE=trace.conf -DEXTRA_DTC_OVERLAY_FILE=usb_trace.overlay
-west flash && mkdir -p trace
-python $ZEPHYR_BASE/scripts/tracing/trace_capture_uart.py \
-  -d /dev/ttyACM0 -b 115200 -o trace/channel0_0     # Ctrl-C to stop
+  -DEXTRA_CONF_FILE=trace.conf -DEXTRA_DTC_OVERLAY_FILE=uart_trace.overlay
+west flash --esp-device $UART && mkdir -p trace
+python labs/sops/trace_capture.py -d $UART -o trace/channel0_0   # Ctrl-C to stop
 cp $ZEPHYR_BASE/subsys/tracing/ctf/tsdl/metadata trace/
 grep -q sleep_ticks trace/metadata || cat firmware/kernel/ctf_sleep_events.tsdl >> trace/metadata
 python $ZEPHYR_BASE/scripts/tracing/trace_viewer.py --metadata trace/metadata trace/channel0_0
@@ -204,8 +211,11 @@ python $ZEPHYR_BASE/scripts/tracing/trace_viewer.py --metadata trace/metadata tr
 > Zephyr main emits two `k_sleep` events that its own metadata doesn't describe (since Aug 2026). Without the `grep … || cat` line, the trace dies at the first `k_msleep`.
 
 <!--
-11:30–13:00. The USB jack ignores -b, but the script requires it. With the pot,
-pass -DEXTRA_DTC_OVERLAY_FILE="pot_esp32s3.overlay;usb_trace.overlay".
+11:30–13:00. $UART and $USB come from ls -l /dev/serial/by-id (SOP-05 §1); the
+console is a terminal on $USB. trace_capture.py drains the port before "enable":
+Zephyr's own capture script keeps bytes the bridge still holds, starts mid-event,
+and nothing decodes. With the pot, pass
+-DEXTRA_DTC_OVERLAY_FILE="pot_esp32s3.overlay;uart_trace.overlay".
 trace_viewer.py exists on Zephyr main only (added June 2026); `babeltrace2 trace/`
 gives a text dump on any version. The metadata gap is upstream commit a672a717cae.
 -->
@@ -220,8 +230,9 @@ gives a text dump on any version. The metadata gap is upstream commit a672a717ca
 ![h:480](img/tr_preemption.svg)
 
 <!--
-13:00–16:00. Narrate 1 → 8; the chain is copied from a real capture of this
-firmware. Ask:
+13:00–16:00. Narrate 1 → 8; chain and times come from a capture of this firmware
+on the S3 (2026-10-21): 2 at 7 µs after the tick, 4 at 15–20 µs, 5 at 23 µs, 6 at
+52 µs. Ask:
 - "Where is lat_peak_us?" (1 → 5: tick to the thread's first instruction.)
 - "Why does the console go to ready, not blocked?" (It was running; a preempted
   thread still wants the CPU.)
@@ -258,19 +269,22 @@ only until week 8.
 
 | | Per 1 ms tick | Per second |
 |---|---|---|
-| The node's trace, filtered | ≈ 20 events, ≈ 0.5 KB | ≈ 0.5 MB/s |
-| Ring buffer, 2 KB | full in ≈ 4 ms if not drained | |
-| A 115200 UART, for scale | | ≈ 11.5 KB/s |
+| The node's trace, filtered | ≈ 15 events, ≈ 0.37 KB | ≈ 0.37 MB/s |
+| Ring buffer, 32 KB | full in ≈ 75 ms if not drained | |
+| USB jack, measured | | ≈ 60 KiB/s |
+| UART jack at 4 Mbaud, measured | | ≈ 390 KiB/s |
 
-Trace **seconds, not minutes**, and expect **drops**: a lane with a missing switch is a gap, not a bug.
+Trace **seconds**, and expect **drops**: a missing switch is a gap, not a bug.
 
 <!--
 17:30–19:00. Six events per tick carry a 20-byte thread name (switches, ready,
 pend): ≈ 200 of the ≈ 500 bytes. Filtering SYSCALL and TIMER saved ≈ 13 %. A full
 buffer loses whole events. Counted from a native_sim capture of this firmware,
-median of 100 ticks: 26 events / 600 B unfiltered, 22 / 524 B filtered. The S3
-will be close: the 1 kHz tick sets the event mix, not the chip. Whether the USB
-jack keeps up is part of the demo.
+median of 100 ticks: 26 events / 600 B unfiltered, 22 / 524 B filtered. On the S3
+(2026-10-21), with SYSCALL and TIMER only off: ≈ 0.45 MB/s, so the 4 Mbaud link
+kept ≈ 91 % of the ticks and the USB jack one in six. trace.conf as shipped also
+drops message-queue and idle events: ≈ 0.37 MB/s, every tick kept outside calib.
+During calib the starved tracer keeps the first ≈ 75 ms, a 32 KB buffer's worth.
 -->
 
 ---
@@ -288,8 +302,10 @@ jack keeps up is part of the demo.
 
 <!--
 19:00–20:30. The lock is in CTF_EVENT → irq_lock(). Misconception to anticipate: "trace timestamps are ground truth".
-They are the truth as perturbed by tracing. Trace widths and GPIO widths differ by
-µs both ways: GPIO includes gpio_pin_set_dt, the trace includes its own formatting.
+They are the truth as perturbed by tracing. Measured on the S3 (2026-10-21), 5 s on
+instr_samp: tracing off, period 997.9–1002.3 µs and pulse 0.75 µs; tracing on,
+982–1018 µs and 10.8 µs. Each traced GPIO call costs ≈ 2.5 µs with interrupts
+locked, and the pulse holds four of them.
 -->
 
 ---
@@ -349,7 +365,7 @@ instrument.
 
 ## Demo: one `calib`, traced
 
-1. Traced build: console on the UART jack, capture on the USB jack.
+1. Traced build: capture on the UART jack, console on the USB jack.
 2. Capture, type `calib`, wait 2 s, Ctrl-C.
 3. Find the console busy-waiting; zoom on one tick, name events 1–8.
 4. A 10th tick: `k_sem_give`, then the switch to control.
@@ -357,11 +373,13 @@ instrument.
 
 <!--
 23:30–31:00. Dry-run on your own board first:
-- /dev/ttyACM0 appears when the USB jack is plugged in.
-- trace/channel0_0 grows while the capture runs.
+- ls -l /dev/serial/by-id shows both jacks; the console answers on the USB jack.
+- trace_capture.py reports ≈ 390 KiB/s.
 - The viewer's lanes run past the first second (if they stop early, the metadata
   patch is missing).
-If the USB jack can't keep up, events drop: show it, that's the bandwidth slide live.
+Run the viewer with -f in a second terminal to watch the lanes fill live. Expect
+gaps while calib spins: the tracer drains at the lowest priority and starves with
+everyone else. Show them: that's the cost slides, live.
 -->
 
 ---
@@ -380,7 +398,7 @@ If the USB jack can't keep up, events drop: show it, that's the bandwidth slide 
 **Numbers from the analyzer, story from the trace.**
 
 <!--
-31:00–33:00. Add trace.conf and usb_trace.overlay to any app; the third file is
+31:00–33:00. Add trace.conf and uart_trace.overlay to any app; the third file is
 the metadata patch. All three live in firmware/kernel/; SOP-05 has the commands.
 Then the bridge: the lab's table, predictions due before the boards come out.
 -->
