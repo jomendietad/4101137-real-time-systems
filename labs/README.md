@@ -13,13 +13,11 @@ bring-ups. Before week 1: [setup.md](setup.md).
 | 3 | [deck](presentations/03_scheduler.md) | [The S3 port and the first thread](lab03_port.md) | — |
 | 4 | [deck](presentations/04_ipc.md) | [The full migration and the A/B](lab04_ipc.md) | — |
 | 5 | [deck](presentations/05_tracing.md) | [Tracing: seeing what the analyzer can't](lab05_tracing.md) | [SOP-05](sops/sop05_tracing.md) |
-| 6 | [deck](presentations/06_schedulability.md) | [Schedulability: the theory, put to the test](lab06_schedulability.md) · Problem Set 1 | — |
-| 7 | [deck](presentations/07_rta_inversion.md) | [RTA and priority inversion](lab07_rta_inversion.md) · Problem Set 2 | — |
-| 8 | — | [**Workshop** — the design review](lab08_workshop.md) | — |
-| 9 | [deck](presentations/09_freertos_multicore_wcet.md) | [The two cores (AMP)](lab09_amp.md) | [SOP-09](sops/sop09_amp.md) |
-| 10 | [deck](presentations/10_preempt_rt.md) | [PREEMPT_RT: Linux enters the loop](lab10_preempt_rt.md) | [SOP-10](sops/sop10_preempt_rt.md) |
-| 11 | [deck](presentations/11_sched_deadline.md) | [Periodic tasks in Linux: from CBS to SCHED_DEADLINE](lab11_sched_deadline.md) | — |
-| 12 | [deck](presentations/12_isolation.md) | [Isolation and interference: the dress rehearsal](lab12_isolation.md) | [SOP-10](sops/sop10_preempt_rt.md), §5 |
-| 13 | [deck](presentations/13_kickoff.md) | [SoilSense Hub kickoff](lab13_kickoff.md) (covers checkpoints and demo day) | — |
-| 14 | [deck](presentations/14_can.md) | Checkpoint 1 | [SOP-14](sops/sop14_can.md) |
-| 15–16 | — | Checkpoint 2 · demo day | — |
+| 6 | [deck](presentations/06_schedulability.md) | [Schedulability, response time and priority inversion](lab06_schedulability.md) · the Problem Set | — |
+| 7 | — | [**Workshop** — the design review](lab07_workshop.md) | — |
+| 8 | [deck](presentations/08_freertos_multicore_wcet.md) | [The two cores (AMP): guided workshop](lab08_amp.md) | [SOP-08](sops/sop08_amp.md) |
+| 9 | [deck](presentations/09_preempt_rt.md) | [PREEMPT_RT: Linux enters the loop](lab09_preempt_rt.md) | [SOP-09](sops/sop09_preempt_rt.md) |
+| 10 | [deck](presentations/10_deadline_isolation.md) | [SCHED_DEADLINE and isolation: the dress rehearsal](lab10_deadline_isolation.md) | [SOP-09](sops/sop09_preempt_rt.md), §5 |
+| 11 | [deck](presentations/11_kickoff.md) | [SoilSense Hub kickoff](lab11_kickoff.md) (covers checkpoints and demo day) | — |
+| 12 | [deck](presentations/12_can.md) | Checkpoint 1 | [SOP-12](sops/sop12_can.md) |
+| 13–14 | — | Checkpoint 2 · demo day | — |

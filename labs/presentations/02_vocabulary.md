@@ -93,7 +93,7 @@ depends on it.
 | jitter | how much any of these varies |
 
 <!--
-9:00–13:00. Buttazzo §2.1, §4.1. R_i is the star of week 7. The lab measures
+9:00–13:00. Buttazzo §2.1, §4.1. R_i is the star of week 6. The lab measures
 period jitter first.
 Misconception to anticipate: "jitter averages out". For a control loop the worst
 sample is the one that hurts; that is why every table in this course asks for max.
@@ -117,7 +117,7 @@ villain. 5: the handler runs.
 The L4's ART cache makes links 1–3 wobble (0 or 4 wait states per fetch), so the
 lab measures twice, cache on and off: the difference isolates them. What survives
 is link 4. Buttazzo §2.4 catalogs the rest (DMA, caches, interrupts, syscalls);
-week 9 returns to it.
+week 8 returns to it.
 -->
 
 ---
@@ -159,8 +159,8 @@ be fast and regular" becomes "While irrigating, the system shall sample pressure
 every 1 ms with jitter below X µs", where X is what the lab measures today.
 Requirements and baselines are born together.
 Misconception to anticipate: "requirements are paperwork". From today every piece
-of evidence cites one; that is what makes week 8's defense possible. Don't say
-"RTM" yet: that name is week 8's reveal.
+of evidence cites one; that is what makes week 7's defense possible. Don't say
+"RTM" yet: that name is week 7's reveal.
 -->
 
 ---
@@ -229,7 +229,7 @@ That number is the course baseline: everything after week 2 is measured against 
 
 ## References
 
-- Buttazzo, §1.3 and §2.1–2.3; §2.4 skimmed (returns in week 9)
+- Buttazzo, §1.3 and §2.1–2.3; §2.4 skimmed (returns in week 8)
 - A. Mavin et al., "Easy Approach to Requirements Syntax (EARS)", *IEEE RE'09*
 - J. Yiu, *The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors*, 3rd ed., ch. 8 (exception entry)
 - STM32L4 reference manual RM0351: EXTI, NVIC, and §3.3 (the ART accelerator)

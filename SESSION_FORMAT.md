@@ -12,7 +12,7 @@ What this course fixes on top of the standard:
 | | This course |
 |---|---|
 | Course box in every lab | **What about FreeRTOS?** — 3–5 lines: the equivalent API, and when that option wins |
-| Living record | **RET — Timing Evidence Report** ([templates/ret.md](templates/ret.md)): updated weekly, handed in at the workshop (week 8) and at the close |
+| Living record | **RET — Timing Evidence Report** ([templates/ret.md](templates/ret.md)): updated weekly, handed in at the workshop (week 7) and at the close |
 | House rule | *"Show me the trace"*: every timing claim cites a measurement and its instrument |
 | Deck accent | `#0d9488` |
 

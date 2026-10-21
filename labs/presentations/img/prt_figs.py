@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Figures for the week-10 deck (10_preempt_rt.md).
+"""Figures for the week-9 deck (09_preempt_rt.md).
 
     python3 prt_figs.py       # writes prt_wakeup.svg here
 

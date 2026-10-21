@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Figures for the week-9 deck (09_freertos_multicore_wcet.md).
+"""Figures for the week-8 deck (08_freertos_multicore_wcet.md).
 
     python3 mc_figs.py        # writes mc_models.svg, mc_wcet.svg here
 """
@@ -31,7 +31,7 @@ def models():
         body.append(line(x + 100, 140, x + 100, 230, MUTED, 3, arrow=True))
     body.append(line(620, 60, 620, 440, GRID, 2))
     body.append(text(910, 360, "each core analyzed alone:", 20, 400, INK, "middle"))
-    body.append(text(910, 388, "weeks 6–7 hold, core by core", 20, 400, INK, "middle"))
+    body.append(text(910, 388, "week 6 holds, core by core", 20, 400, INK, "middle"))
     body.append(text(910, 426, "Zephyr AMP on the S3: one image per core", 20, 700, MUTED, "middle"))
     return svg(1220, 450, body)
 

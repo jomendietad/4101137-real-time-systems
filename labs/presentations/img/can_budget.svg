@@ -8,7 +8,7 @@
 <line x1="1220.0" y1="70" x2="1220.0" y2="180" stroke="#e11d48" stroke-width="4"/>
 <text x="1220.0" y="62.0" text-anchor="end" font-size="20" font-weight="700" fill="#e11d48">deadline</text>
 <polyline points="89.0,160 89.0,199 173.2,199" fill="none" stroke="#e11d48" stroke-width="2"/>
-<text x="181.2" y="206.0" text-anchor="start" font-size="21" font-weight="700" fill="#e11d48">node: ≈ 1 ms (week 6, ADR-005)</text>
+<text x="181.2" y="206.0" text-anchor="start" font-size="21" font-weight="700" fill="#e11d48">node: ≈ 1 ms to detect (ADR-005), plus the IPM hop (week 8)</text>
 <polyline points="129.6,160 129.6,239 173.2,239" fill="none" stroke="#d97706" stroke-width="2"/>
 <text x="181.2" y="246.0" text-anchor="start" font-size="21" font-weight="700" fill="#d97706">CAN: 400 µs (1-byte frame, highest priority, 500 kbit/s)</text>
 </svg>

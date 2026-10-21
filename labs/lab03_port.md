@@ -158,7 +158,7 @@ not to skip.
 - Fill in the last column. Does `calib` still ruin sampling? And control?
 - `pressure_mv`, `estop` and `setpoint_mv` are now written in one thread and read
   in another. Name who writes and who reads each one, and say in one sentence why
-  today's code gets away with it. Week 7 answers it properly.
+  today's code gets away with it. Week 6 answers it properly.
 - **Evidence:** capture with `calib` active, sampling and control on the same
   screen + the filled column.
 

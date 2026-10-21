@@ -16,7 +16,7 @@ style: |
 
 # PREEMPT_RT: Linux enters the loop
 
-**Week 10** · why stock Linux is late, and what the RT kernel changes
+**Week 9** · why stock Linux is late, and what the RT kernel changes
 
 The Hub runs Linux. Its tardiness is a reputation; today it becomes a histogram.
 
@@ -65,7 +65,7 @@ anatomy, at a larger scale. Segment lengths are schematic.
 <!-- _class: s1 question -->
 <!-- _header: 1 · Why stock Linux is late -->
 
-## "A driver holds a spinlock while your thread waits." Which week-7 idea is that?
+## "A driver holds a spinlock while your thread waits." Which week-6 idea is that?
 
 1. Interference from higher-priority tasks
 2. Blocking: $B_i$, by code you don't control
@@ -74,7 +74,7 @@ anatomy, at a larger scale. Segment lengths are schematic.
 
 <!--
 9:00–11:00. Answer: 2. It is a critical section of a lower-priority activity that
-delays you; the difference from week 7 is that you can't bound it by reading the
+delays you; the difference from week 6 is that you can't bound it by reading the
 code, because it isn't yours.
 -->
 
@@ -86,7 +86,7 @@ code, because it isn't yours.
 ## Make almost everything preemptible
 
 - Interrupt handlers become **kernel threads**: an RT task can outrank a network card
-- Spinlocks become **rtmutexes** that sleep and **inherit priority**: week 7's PIP, inside the kernel
+- Spinlocks become **rtmutexes** that sleep and **inherit priority**: week 6's PIP, inside the kernel
 - Softirqs run in threads too
 - Merged into mainline Linux in 6.12 (2024); the Pi still needs a kernel built with it
 
@@ -144,7 +144,7 @@ answer.
 
 ## Same theory, two orders of magnitude
 
-- MCU (weeks 2–9): the worst case comes from a small kernel you can read, **µs**
+- MCU (weeks 2–8): the worst case comes from a small kernel you can read, **µs**
 - RT Linux: from a giant one, **tens to hundreds of µs**, even with PREEMPT_RT
 - That gap is the number the Hub's partitioning ADR is built on
 
@@ -181,8 +181,8 @@ their clock dynamically; Linux SBCs do, which is today's DFS row.
 
 <!--
 27:00–32:00. Predictions to write down: stock-loaded's max is the scary one;
-RT-loaded lands well under the pump loop's 10 ms, but nowhere near week 9's µs.
-SOP-10 has the image, the commands and the plot script.
+RT-loaded lands well under the pump loop's 10 ms, but nowhere near week 8's µs.
+SOP-09 has the image, the commands and the plot script.
 -->
 
 ---
@@ -191,7 +191,7 @@ SOP-10 has the image, the commands and the plot script.
 
 - Buttazzo, §13.3.4–13.3.5
 - Linux kernel docs: *Real-time preemption* (PREEMPT_RT); `rt-tests` (cyclictest)
-- SOP-10: the image, the runs, the histogram script
+- SOP-09: the image, the runs, the histogram script
 
 <!--
 32:00–40:00. Questions, then SBC bring-up.

@@ -1,8 +1,8 @@
-# Week 8 — Workshop — the design review
+# Week 7 — Workshop — the design review
 > - **Reading:** review of chs. 2, 4, and 7 — ch. 14 has practice solutions.
 > - **Module:** 3
-> - **Due today:** Problem Set 1.
-> - **Workshop scope:** chs. 2, 4, 7 + everything measured through week 7.
+> - **Due today:** the Problem Set, and week 6's homework (Daniela's U test, the RTA script).
+> - **Workshop scope:** chs. 2, 4, 7 + everything measured through week 6.
 
 **From:** Eng. Samuel Cifuentes — *"Formal design review. Each pair presents the
 complete analysis of their node: task set, utilization, RTA with blocking, and the
@@ -36,7 +36,7 @@ of you know."*
 
 - Individual quiz (in class).
 - **RET frozen as v1** (tag `workshop` in the team repo) with §1–§4 complete.
-- Problem Set 1 solved (handed in at the start). Problem Set 2 continues (week 9).
+- The Problem Set solved (handed in at the start).
 
 ## Rubric (100 workshop pts)
 

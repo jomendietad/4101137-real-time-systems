@@ -48,7 +48,7 @@ Setup, done at home before week 1: [labs/setup.md](labs/setup.md).
 
 ## Schedule
 
-16 weekly sessions (Wednesdays, 4–7 pm): a 40-minute talk, a 2-hour lab, then wrap-up.
+14 weekly sessions (Wednesdays, 4–7 pm): a 40-minute talk, a 2-hour lab, then wrap-up.
 Per-week readings, with what to skip: [READINGS.md](READINGS.md). Session guides:
 [labs/](labs/README.md).
 
@@ -59,30 +59,28 @@ Per-week readings, with what to skip: [READINGS.md](READINGS.md). Session guides
 | 3 | The scheduler: threads, priorities, preemption | Port to the S3 with one overlay; the first thread | Silicon comparison; `C_i` on the S3 |
 | 4 | IPC: message queues, workqueues, ISR deferral | The full migration; A/B against the superloop | ADR-001; overhead; stack high-water marks |
 | 5 | Tracing: seeing the scheduler | CTF trace of one preemption; the tracer's cost | Annotated trace; instrument per `C_i` |
-| 6 | Schedulability: U, RM, EDF; jitter vs. control | Fig. 4.13 on the S3; jitter injected into the flow loop | ADR-005; utilization tests. Problem Set 1 out |
-| 7 | Response-time analysis; priority inversion | RTA as a script; inversion reproduced and fixed | RTA with blocking; ADR-002. Problem Set 2 out |
-| 8 | — | **Workshop**: quiz + design review | RET v1, tagged |
-| 9 | FreeRTOS, multicore, WCET | The hard loop alone on the second core (AMP) | ADR-003; tail table |
-| 10 | PREEMPT_RT: what it changes in the kernel | SBC bring-up; `cyclictest` stock vs. RT | Latency histograms; the Hub's task set |
-| 11 | Servers, reservation, CBS → `SCHED_DEADLINE` | Periodic tasks: `SCHED_FIFO` vs. `SCHED_DEADLINE` | CBS budget |
-| 12 | Linux RT in practice: affinity, isolation, mixed loads | Interference rig; isolation recipe | ADR-004 |
-| 13 | Mixed criticality, partitioning, safety | Project kickoff: architecture and ADRs | ADR-P1–P4; ADR-P5 draft |
-| 14 | CAN: the bus as a scheduled resource | Checkpoint 1: hard loop under load; CAN link up | ADR-P5 with the bus RTA |
-| 15 | — | Checkpoint 2: GUI + routing; e2e budget; the watchdog bites | End-to-end budget, measured |
-| 16 | — | **Demo day** | Final RET |
+| 6 | Schedulability: U, RM, EDF, RTA, priority inversion | Fig. 4.13 on the S3; inversion reproduced and fixed; `calib` and the e-stop fixed | ADR-002, ADR-005; tests and RTA with blocking. Problem Set out |
+| 7 | — | **Workshop**: quiz + design review | RET v1, tagged |
+| 8 | FreeRTOS, multicore, WCET | **Guided**: the node split across the two cores (AMP), kept for the project | ADR-003 draft; tail table; the inter-core hop |
+| 9 | PREEMPT_RT: what it changes in the kernel | SBC bring-up; `cyclictest` stock vs. RT | Latency histograms; the Hub's task set |
+| 10 | CBS → `SCHED_DEADLINE`; affinity, isolation, IRQ steering | FIFO vs. DEADLINE under a hog; the interference rig | CBS budget; ADR-004 |
+| 11 | Mixed criticality, partitioning, safety | Project kickoff: architecture and ADRs | ADR-P1–P4; ADR-P5 draft |
+| 12 | CAN: the bus as a scheduled resource | Checkpoint 1: hard loop under load; AMP node and CAN link up | ADR-P5 with the bus RTA; ADR-003 closed |
+| 13 | — | Checkpoint 2: GUI + routing; e2e budget; the watchdog bites | End-to-end budget, measured |
+| 14 | — | **Demo day** | Final RET |
 
 ## Assessment
 
 | Component | Weight |
 |---|---|
-| Labs, weeks 1–12, each graded by its rubric (the week-8 workshop counts as one) | 30 % |
-| Project, weeks 13–16: kickoff 20 · checkpoint 1 15 · checkpoint 2 20 · demo day 45 | 70 % |
+| Labs, weeks 1–10, each graded by its rubric (the week-7 workshop counts as one; week 8 is guided and feeds the project) | 30 % |
+| Project, weeks 11–14: kickoff 20 · checkpoint 1 15 · checkpoint 2 20 · demo day 45 | 70 % |
 
 ## Hardware and cost
 
 Groups of 2–3 buy a **Control Kit**: ESP32-S3 DevKitC, 8-channel logic analyzer,
 pump + flow sensor + servo as the plant, ILI9341 display (~$190–320k COP), and a
-CAN transceiver (≈ US$2–5). From week 10, merged groups share a **Hub Kit**: a Raspberry Pi 4
+CAN transceiver (≈ US$2–5). From week 9, merged groups share a **Hub Kit**: a Raspberry Pi 4
 with a CAN HAT. The NUCLEO-L476RG from the prerequisite courses covers weeks 1–2.
 Parts and links: [BOM.md](BOM.md).
 
@@ -100,10 +98,10 @@ builds and runs on `native_sim`, for work without a board. Every push builds all
 - G. Buttazzo, *Hard Real-Time Computing Systems*, 4th ed., Springer, 2024
   ([link](https://link.springer.com/book/10.1007/978-3-031-45410-3); free through
   UNAL's SpringerLink subscription). The theory modules follow it; its Linux chapters
-  anchor weeks 10–12 and the project.
+  anchor weeks 9–10 and the project.
 - The official Zephyr documentation for practice; FreeRTOS docs for the weekly comparison.
 - Optional, week 6: Lee & Seshia, *Introduction to Embedded Systems* (free at [leeseshia.org](https://leeseshia.org)).
-- Week 14: Davis, Burns, Bril and Lukkien, "Controller Area Network (CAN) schedulability
+- Week 12: Davis, Burns, Bril and Lukkien, "Controller Area Network (CAN) schedulability
   analysis: refuted, revisited and revised", *Real-Time Systems* 35, 2007.
 
 ## Repository layout

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Figures for the week-11 deck (11_sched_deadline.md).
+"""Figures for the week-10 deck (10_deadline_isolation.md).
 
     python3 cbs_figs.py       # writes cbs_hog.svg here
 

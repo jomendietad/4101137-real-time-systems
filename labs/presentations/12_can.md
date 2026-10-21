@@ -16,14 +16,15 @@ style: |
 
 # CAN: the bus as a scheduled resource
 
-**Week 14** · one deadline across three computers
+**Week 12** · one deadline across two cores, a bus and Linux
 
 A node trips its e-stop. How long does the pump keep pushing water?
 
 <!--
 0:00–2:00. Edwin's question, from the scenario: the Hub must stop the pump within
 20 ms of a node's e-stop. Until now every deadline lived on one CPU. This one
-crosses the node, a wire and the Hub, and each hop has its own scheduler.
+crosses the node's two cores, a wire and the Hub, and each hop has its own
+scheduler.
 -->
 
 ---
@@ -35,7 +36,7 @@ crosses the node, a wire and the Hub, and each hop has its own scheduler.
 1. **Why CAN**: the field bus of farm machinery
 2. **Arbitration**: fixed priorities, on a wire
 3. **Bus RTA**: frame time and worst-case response
-4. **End to end**: one budget, three schedulers
+4. **End to end**: one budget, four schedulers
 5. **Lab**: checkpoint 1
 
 Goal: give the e-stop frame a response time, and find where the rest of 20 ms goes.
@@ -88,14 +89,14 @@ fixed-priority scheduler, and the ID is the priority. Losers retry after the fra
 <!-- _class: s2 -->
 <!-- _header: 2 · Arbitration -->
 
-## Weeks 6–7, on a wire
+## Week 6, on a wire
 
 - The ID is a **fixed priority**: assign IDs in deadline order (DM, week 6)
 - A frame on the wire **can't be preempted**: the most urgent frame may wait one frame
-- That wait is **blocking**, the $B_i$ of week 7, without any mutex
+- That wait is **blocking**, the $B_i$ of week 6, without any mutex
 
 <!--
-10:00–12:00. Same theory, one new twist: non-preemption. In week 7 blocking came
+10:00–12:00. Same theory, one new twist: non-preemption. In week 6 blocking came
 from a lower-priority thread holding a lock; here it comes from a lower-priority
 frame already being transmitted.
 -->
@@ -147,7 +148,7 @@ content. The formula takes the worst content.
 
 $$R_m = J_m + w_m + C_m \qquad w_m = B_{max} + \sum_{k \in hp(m)} \left\lceil \frac{w_m + J_k + \tau_{bit}}{T_k} \right\rceil C_k$$
 
-- Iterate $w_m$ like week 7's RTA; $B_{max}$ is the longest frame on the bus
+- Iterate $w_m$ like week 6's RTA; $B_{max}$ is the longest frame on the bus
 - e-stop, 1 byte, highest priority: $R = 0 + 270 + 130 = 400$ µs
 
 <!--
@@ -164,13 +165,14 @@ bus utilization is ΣC_k/T_k, as for tasks.
 <!-- _class: s4 figure -->
 <!-- _header: 4 · End to end -->
 
-## 20 ms, three schedulers
+## 20 ms, four schedulers
 
 ![h:300](img/can_budget.svg)
 
 <!--
-19:00–22:00. The node and the bus are already small and analyzed. Everything
-else is the Hub: the MCP2515 raises an interrupt, its handler reads the frame over
+19:00–22:00. The node and the bus are already small and analyzed: detection on
+APPCPU, the IPM hop to PROCPU (week 8 measured it), the frame. Everything else is
+the Hub: the MCP2515 raises an interrupt, its handler reads the frame over
 SPI, the interlock thread wakes, the pump output switches. Each step has a
 priority, and that is the next question.
 -->
@@ -190,8 +192,8 @@ priority, and that is the next question.
 <!--
 22:00–24:00. Answer: 2. Under PREEMPT_RT the CAN controller's interrupt handler is
 a thread, SCHED_FIFO 50 by default; a GUI busy at 60 starves it, and the interlock
-never sees the frame. A path is as urgent as its least urgent hop: week 7's
-inversion, along a chain. Fix: chrt the IRQ thread above the GUI (week 12's
+never sees the frame. A path is as urgent as its least urgent hop: week 6's
+inversion, along a chain. Fix: chrt the IRQ thread above the GUI (week 10's
 recipe has the commands). 3 contradicts the last two slides; 4 is microseconds.
 -->
 
@@ -234,10 +236,10 @@ recipe has the commands). 3 contradicts the last two slides; 4 is microseconds.
 | e-stop frame's response on the bus | node GPIO → end of frame on the CTX pin (analyzer, CAN decoder) |
 | The Hub path: frame in → pump GPIO | the analyzer, at checkpoint 2 |
 
-The CAN link (SOP-14) and ADR-P5 with the bus RTA are part of checkpoint 1.
+The CAN link (SOP-12) and ADR-P5 with the bus RTA are part of checkpoint 1.
 
 <!--
-26:00–32:00. Bring the SOP-14 wiring table up on the screen. Common first-day
+26:00–32:00. Bring the SOP-12 wiring table up on the screen. Common first-day
 failures: missing termination (measure 60 Ω), TX/RX swapped, the sample left in
 loopback mode.
 -->
@@ -249,7 +251,7 @@ loopback mode.
 - R. I. Davis, A. Burns, R. J. Bril, J. J. Lukkien, "Controller Area Network (CAN) schedulability analysis: refuted, revisited and revised", *Real-Time Systems* 35, 2007
 - ISO 11898-1 (CAN); ISO 11783 (ISOBUS) for where it runs on a farm
 - Linux kernel docs: *SocketCAN*; Zephyr docs: *Controller Area Network (CAN)*
-- [SOP-14](../sops/sop14_can.md): wiring, the Pi's overlay, the node's overlay
+- [SOP-12](../sops/sop12_can.md): wiring, the Pi's overlay, the node's overlay
 
 <!--
 32:00–40:00. Questions, then the checkpoint.

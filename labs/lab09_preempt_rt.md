@@ -1,7 +1,7 @@
-# Week 10 — PREEMPT_RT: Linux enters the loop
-> - **Talk:** [10_preempt_rt](presentations/10_preempt_rt.md)
-> - **Tech guide:** [SOP-10](sops/sop10_preempt_rt.md)
-> - **Reading:** [READINGS.md](../READINGS.md), week 10
+# Week 9 — PREEMPT_RT: Linux enters the loop
+> - **Talk:** [09_preempt_rt](presentations/09_preempt_rt.md)
+> - **Tech guide:** [SOP-09](sops/sop09_preempt_rt.md)
+> - **Reading:** [READINGS.md](../READINGS.md), week 9
 > - **Module:** 5
 > - **Starting today:** larger groups (two pairs), one SBC per group. The Hub Kit is needed this week ([BOM](../BOM.md)).
 
@@ -32,7 +32,7 @@ Hand in the prediction column before the lab.
 ## Tasks
 
 ### Task A — SBC bring-up
-- Image with a PREEMPT_RT kernel on the group's SBC (SOP-10: course-prepared image or the distro's RT kernel). Verify: `uname -v` must say `PREEMPT_RT`.
+- Image with a PREEMPT_RT kernel on the group's SBC (SOP-09: course-prepared image or the distro's RT kernel). Verify: `uname -v` must say `PREEMPT_RT`.
 - **Evidence:** `uname -a` output + the group's SSH access.
 
 ### Task B — The curve that decides
@@ -49,7 +49,7 @@ Hand in the prediction column before the lab.
 - **Evidence:** The row 5 numbers proving why production servers lock their governors.
 
 ### Task D — Reading the tail
-- In the RET: where does PREEMPT_RT's max under load sit vs. the pump loop's 10 ms deadline? And vs. the MCU's ~µs (week 9)? Three sentences: what this SBC can and cannot promise.
+- In the RET: where does PREEMPT_RT's max under load sit vs. the pump loop's 10 ms deadline? And vs. the MCU's ~µs (week 8)? Three sentences: what this SBC can and cannot promise.
 - **Evidence:** the paragraph, citing the table's numbers.
 
 ## What about FreeRTOS?
@@ -58,7 +58,7 @@ Change of scale, same question. On the MCU the worst case came from the small ke
 
 ## Deliverables (RET)
 
-- **§3 Week-10 evidence:** table + histograms for the four conditions.
+- **§3 Week-9 evidence:** table + histograms for the four conditions.
 - **§1:** new task-set section: the Hub's tasks (pumps, interlock, GUI, routing)
   with their types and deadlines — `C_i` pending.
 

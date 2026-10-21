@@ -9,7 +9,7 @@
 <rect x="80.0" y="150" width="693.1471805599452" height="60" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
 <text x="426.6" y="189.0" text-anchor="middle" font-size="22" font-weight="700" fill="#16a34a">guaranteed, any n</text>
 <rect x="773.1471805599452" y="150" width="306.85281944005476" height="60" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
-<text x="926.6" y="189.0" text-anchor="middle" font-size="22" font-weight="700" fill="#d97706">maybe: run RTA (week 7)</text>
+<text x="926.6" y="189.0" text-anchor="middle" font-size="22" font-weight="700" fill="#d97706">maybe: run RTA</text>
 <rect x="1080.0" y="150" width="100.0" height="60" fill="#ffe4e6" stroke="#e11d48" stroke-width="2"/>
 <text x="1130.0" y="189.0" text-anchor="middle" font-size="18" font-weight="700" fill="#e11d48">overload</text>
 <line x1="80" y1="270" x2="1180" y2="270" stroke="#475569" stroke-width="2"/>

@@ -36,7 +36,7 @@ ESP32-S3 + Zephyr irrigation controller. Its tasks embody the course taxonomy:
 
 *(Numbers are references; they're fixed and justified in each module's ADRs.)*
 
-### SoilSense Hub (final project, weeks 13–16)
+### SoilSense Hub (final project, weeks 11–14)
 Gateway on a Linux SBC (PREEMPT_RT), shared per group. The Hub is **not just a
 supervisor**: it's a mixed-criticality system with hard requirements of its own,
 and its real-time design is the heart of the final project. In the same box coexist:
@@ -50,7 +50,8 @@ and its real-time design is the heart of the final project. In the same box coex
 
 The CAN bus makes one hard requirement cross three computers: *when a Control node
 trips its overpressure e-stop, the Hub shall stop the pump within 20 ms*. Its budget
-adds the node's response time, the frame's response time on the bus (CAN arbitrates
+adds the node's response time (detection on one core, the hand-off to the core
+that owns the bus), the frame's response time on the bus (CAN arbitrates
 by priority, so the bus has its own RTA), and the Hub's wake-up latency.
 
 **The design challenge**: prove the hard loop meets its deadlines *while* the GUI
@@ -86,9 +87,9 @@ design answer to Edwin's question ("what if the Hub goes down with a valve open?
 | Phase | Weeks | What the team delivers |
 |---|---|---|
 | 1. Prototype and baseline | 1–5 | The node as a superloop and its jitter baseline; the same node on threads, A/B against it; the first traces |
-| 2. Guarantees | 6–8 | Schedulability analysis and RTA of the node's task set; priority inversion reproduced and fixed; the design review (week 8) |
-| 3. Two cores | 9 | The hard loop alone on the S3's second core, judged by its tail; FreeRTOS as the alternative a customer may demand |
-| 4. The Hub | 10–16 | RT Linux measured and isolated; the Hub designed, built and linked to the nodes over CAN; two checkpoints and demo day |
+| 2. Guarantees | 6–7 | Schedulability analysis and RTA of the node's task set; priority inversion reproduced and fixed; the design review (week 7) |
+| 3. Two cores | 8 | The hard loop alone on the S3's second core, judged by its tail and built together into the project's node; FreeRTOS as the alternative a customer may demand |
+| 4. The Hub | 9–14 | RT Linux measured and isolated; the Hub designed, built and linked to the nodes over CAN; two checkpoints and demo day |
 
 ## 5. Documentation Standards
 

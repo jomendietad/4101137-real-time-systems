@@ -25,6 +25,6 @@
 <line x1="1050.0" y1="140.0" x2="1050.0" y2="230.0" stroke="#475569" stroke-width="3" marker-end="url(#ar-muted)"/>
 <line x1="620.0" y1="60.0" x2="620.0" y2="440.0" stroke="#cbd5e1" stroke-width="2"/>
 <text x="910.0" y="360.0" text-anchor="middle" font-size="20" font-weight="400" fill="#0f172a">each core analyzed alone:</text>
-<text x="910.0" y="388.0" text-anchor="middle" font-size="20" font-weight="400" fill="#0f172a">weeks 6–7 hold, core by core</text>
+<text x="910.0" y="388.0" text-anchor="middle" font-size="20" font-weight="400" fill="#0f172a">week 6 holds, core by core</text>
 <text x="910.0" y="426.0" text-anchor="middle" font-size="20" font-weight="700" fill="#475569">Zephyr AMP on the S3: one image per core</text>
 </svg>

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Figures for the week-13 deck (13_kickoff.md).
+"""Figures for the week-11 deck (11_kickoff.md).
 
     python3 mcs_figs.py       # writes mcs_hub.svg, mcs_watchdog.svg here
 """

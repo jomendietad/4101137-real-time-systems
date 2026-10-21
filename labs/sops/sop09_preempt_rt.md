@@ -1,6 +1,6 @@
-# SOP-10 — PREEMPT_RT on the SBC + cyclictest
+# SOP-09 — PREEMPT_RT on the SBC + cyclictest
 
-- **Serves:** [lab10_preempt_rt.md](../lab10_preempt_rt.md) and [lab12_isolation.md](../lab12_isolation.md)
+- **Serves:** [lab09_preempt_rt.md](../lab09_preempt_rt.md) and [lab10_deadline_isolation.md](../lab10_deadline_isolation.md)
 - **Hardware:** Raspberry Pi 4/5, 32 GB microSD, wired Ethernet recommended.
 
 Steps, checks, and troubleshooting only — the *why* lives in the lab.
@@ -68,7 +68,7 @@ python3 plot_cyclictest.py stock_idle.txt stock_load.txt rt_idle.txt rt_load.txt
 [`plot_cyclictest.py`](plot_cyclictest.py) (this directory) overlays the
 histograms, log-scale, one line per file, max annotated. Output: `cyclictest.png`.
 
-## 5. Isolation (week 12)
+## 5. Isolation (week 10)
 
 Edit the kernel command line — one single line, append:
 
@@ -84,14 +84,22 @@ isolcpus=3 nohz_full=3 rcu_nocbs=3
 cat /sys/devices/system/cpu/isolated      # → 3
 ```
 
-Pin and steer:
+Pin, contract and steer (lab 10's rows):
 
 ```bash
-taskset -c 3 ./pump_loop &                # pin the loop
-ps -o pid,psr,comm -p $!                  # PSR must say 3
-grep . /proc/irq/*/smp_affinity_list      # where IRQs land
+sudo taskset -c 3 chrt -f 90 ./pump_loop &        # rows 1–2: FIFO on core 3
+ps -o pid,psr,comm -p $!                          # PSR must say 3
+sudo taskset -c 3 chrt -f 95 ./hog &              # rows 2–3: the hog, same core
+DL="--sched-runtime 2000000 --sched-deadline 10000000 --sched-period 10000000"
+sudo taskset -c 3 chrt -d $DL 0 ./pump_loop &     # rows 3, 5, 6: DEADLINE on core 3
+sudo chrt -d $DL 0 ./pump_loop &                  # row 4: DEADLINE on cores 0–2
+grep . /proc/irq/*/smp_affinity_list              # where IRQs land
 echo 0-2 | sudo tee /proc/irq/<N>/smp_affinity_list   # move one off core 3
 ```
+
+A `SCHED_DEADLINE` task's affinity must cover its whole scheduling domain: all of
+cores 0–2, or the isolated core 3 alone. Set the affinity first and the policy
+second, as above; `taskset` on a task that is already DEADLINE is refused.
 
 ## Troubleshooting
 
@@ -103,4 +111,5 @@ echo 0-2 | sudo tee /proc/irq/<N>/smp_affinity_list   # move one off core 3
 | `pro enable realtime-kernel` refuses | Token not attached / not personal plan | `pro attach` first; personal tokens allow 5 machines |
 | Histogram empty in the output file | Forgot `-h 400` or `-q` swallowed by a typo | Re-run with the exact step-3 line |
 | `isolated` shows empty after reboot | cmdline edited in the wrong file or line broken in two | The Pi cmdline is **one line**; confirm the file is `/boot/firmware/cmdline.txt` |
-| Loop lands on core 3 but still jitters | IRQs still pointed at core 3 | Move them (step 5) — that's the lab's third table row, not a bug |
+| `chrt -d` fails with `Operation not permitted` | Affinity narrower than the domain (e.g. `taskset -c 2`), or the policy set before the affinity | Core 3 alone or cores 0–2 whole; `taskset -c 3 chrt -d …` in that order |
+| Loop lands on core 3 but still jitters | IRQs still pointed at core 3 | Move them (step 5) — that's row 6 of lab 10, not a bug |

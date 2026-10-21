@@ -57,7 +57,7 @@ the role to pins. Vocabulary, one line each: node (a device in the tree),
 property (its facts), binding (the schema a node must follow), alias and chosen
 (role names the app looks up: led0, zephyr,console), overlay (a patch on the
 board's tree: this is the port). Zephyr compiles the tree: DEVICE_DT_GET resolves
-at build time and costs no RAM; Linux parses the same syntax at boot (week 10's
+at build time and costs no RAM; Linux parses the same syntax at boot (week 9's
 SBC).
 Today students write the S3 overlay from the Nucleo one. Warn them: without it the
 build still succeeds, because every pin is optional. Flat lines on the analyzer

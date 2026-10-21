@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Figures for the week-6 deck (06_schedulability.md). Standard library only.
 
-    python3 sc_figs.py        # writes sc_fig413.svg, sc_bounds.svg, sc_jitter.svg here
+    python3 sc_figs.py        # writes sc_fig413.svg and sc_bounds.svg here
 
 The schedules are simulated, not drawn: changing TASKS redraws Fig. 4.13 for any set.
 """
@@ -87,7 +87,7 @@ def bounds():
     ll2 = 2 * (2 ** 0.5 - 1)
     body = []
     rows = [("EDF", [(0, 1, "c3", "guaranteed: U ≤ 1 is exact"), (1, 1.1, "c5", "overload")]),
-            ("RM", [(0, math.log(2), "c3", "guaranteed, any n"), (math.log(2), 1, "c7", "maybe: run RTA (week 7)"),
+            ("RM", [(0, math.log(2), "c3", "guaranteed, any n"), (math.log(2), 1, "c7", "maybe: run RTA"),
                     (1, 1.1, "c5", "overload")])]
     for k, (name, spans) in enumerate(rows):
         y = 40 + k * 110
@@ -108,27 +108,6 @@ def bounds():
     return svg(w, y + 140, body)
 
 
-def jitter():
-    x0, period, scale, n = 60, 10, 130, 9
-    offs = [0, 1.5, -0.8, 2.6, 0.4, -1.9, 4.1, 0.9, -0.5]
-    body = [text(x0, 32, "nominal: every T = 10 ms", 24, 700, MUTED)]
-    for k in range(n):
-        x = x0 + k * scale
-        body.append(f'<line x1="{x}" y1="50" x2="{x}" y2="110" stroke="{GRID}" stroke-width="3"/>')
-    body.append(text(x0, 164, "actual: when the control thread really ran", 24, 700, C["c5"]))
-    for k in range(n):
-        x = x0 + (k * period + offs[k]) * scale / period
-        body.append(f'<line x1="{x}" y1="178" x2="{x}" y2="238" stroke="{C["c5"]}" stroke-width="3"/>')
-        if k:
-            dt = period + offs[k] - offs[k - 1]
-            xm = x0 + ((k - 0.5) * period + (offs[k] + offs[k - 1]) / 2) * scale / period
-            body.append(text(xm, 272, f"{dt:.1f} ms", 20, 400, MUTED, "middle"))
-    body.append(text(x0, 322, "u[k] = Kp·e[k] + Ki·T·Σe[i]", 24, 700, INK))
-    body.append(text(x0, 356, "the controller multiplies by T = 10 ms; the plant integrated over the gaps above",
-                     21, 400, INK))
-    return svg(x0 * 2 + (n - 1) * scale, 372, body)
-
-
 if __name__ == "__main__":
     _, rm_miss, rm_pre = simulate(TASKS, "RM", 35)
     _, edf_miss, edf_pre = simulate(TASKS, "EDF", 35)
@@ -136,5 +115,4 @@ if __name__ == "__main__":
     assert rm_pre[1] == 5 and edf_pre[1] == 1, "book: τ2 preempted 5 times under RM, once under EDF"
     (HERE / "sc_fig413.svg").write_text(fig413())
     (HERE / "sc_bounds.svg").write_text(bounds())
-    (HERE / "sc_jitter.svg").write_text(jitter())
-    print("sc_fig413.svg sc_bounds.svg sc_jitter.svg")
+    print("sc_fig413.svg sc_bounds.svg")

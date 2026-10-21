@@ -15,7 +15,7 @@ style: |
 
 # Mixed criticality and safety
 
-**Week 13** · the SoilSense Hub kickoff
+**Week 11** · the SoilSense Hub kickoff
 
 One box, three personalities: it controls the pumps, serves a human, and moves data.
 
@@ -66,12 +66,12 @@ week's talk is about exactly that.
 ## ADR-P1: what stays in Linux, what would force an MCU
 
 - Not taste: two numbers already in your RET
-- Week 9: an MCU loop's tail, **µs**
-- Weeks 10–12: RT Linux, isolated, **tens of µs**
+- Week 8: an MCU loop's tail, **µs**
+- Weeks 9–10: RT Linux, isolated, **tens of µs**
 - Compare each against its requirement's deadline
 
 <!--
-9:00–12:00. Write the week-9 and week-12 tails next to each band's deadline on the
+9:00–12:00. Write the week-8 and week-10 tails next to each band's deadline on the
 board.
 -->
 
@@ -160,10 +160,10 @@ derive from it); DO-178C is avionics.
 
 | Week | Milestone | Passes with… |
 |---|---|---|
-| 13 | Kickoff | ADR-P1–P4 defended with evidence; ADR-P5 (the bus) drafted |
-| 14 | Checkpoint 1 | the hard loop under load, misses = 0; CAN link up; bus RTA |
-| 15 | Checkpoint 2 | GUI + routing; the e2e budget measured; the watchdog bites live |
-| 16 | Demo day | live demo, final RET, honest postmortem |
+| 11 | Kickoff | ADR-P1–P4 defended with evidence; ADR-P5 (the bus) drafted |
+| 12 | Checkpoint 1 | the hard loop under load, misses = 0; the AMP node and CAN link up; bus RTA |
+| 13 | Checkpoint 2 | GUI + routing; the e2e budget measured; the watchdog bites live |
+| 14 | Demo day | live demo, final RET, honest postmortem |
 
 <!--
 26:00–30:00. Checkpoint targets are numbers with a load condition, not
@@ -203,7 +203,7 @@ Zephyr or FreeRTOS; the partitioning argument is kernel-agnostic.
 
 - Buttazzo, ch. 11: §11.2, §11.3, §11.5.2 (the robot's task table in §11.4 mirrors the node's)
 - IEC 61508 (functional safety), DO-178C (airborne software): overviews only
-- Lab 13 guide: the ADRs, the milestones, the rubric
+- Lab 11 guide: the ADRs, the milestones, the rubric
 
 <!--
 35:00–40:00.

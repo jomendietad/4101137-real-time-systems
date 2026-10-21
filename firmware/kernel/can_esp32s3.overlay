@@ -1,5 +1,5 @@
 /*
- * CAN (TWAI) link to the Hub, project weeks 13-16. The board's default TWAI pins
+ * CAN (TWAI) link to the Hub, project weeks 11-14. The board's default TWAI pins
  * (GPIO5/6) are instr_ctrl and instr_cons, so CAN moves to GPIO10 (TX) and
  * GPIO11 (RX), wired to an SN65HVD230 transceiver.
  */

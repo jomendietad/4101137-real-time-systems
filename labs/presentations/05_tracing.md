@@ -15,7 +15,7 @@ style: |
 
 # Tracing: seeing the scheduler
 
-**Week 5 · demo** · the instrument labs 6 and 7 run on
+**Week 5 · demo** · the instrument lab 6 runs on
 
 The analyzer sees pins. The trace sees decisions.
 
@@ -246,7 +246,7 @@ firmware. Ask:
 (spinning in calib) when the tick arrived; preemption moves it to ready. 1 confuses
 it with sampling, which is the thread that blocks on tick_q. 3 confuses ISR entry
 with a thread state: the ISR is long gone by event 5. 4: the node runs on PROCPU
-only until week 9.
+only until week 8.
 -->
 
 ---
@@ -374,8 +374,8 @@ If the USB jack can't keep up, events drop: show it, that's the bandwidth slide 
 | Lab | Use the trace to… |
 |---|---|
 | 6 · Fig. 4.13 | see τ2 still *ready* when its deadline passes under RM |
-| 6 · Task D | see `calib` spin (busy-wait events), then sleep once fixed |
-| 7 · inversion | see who holds the lock while control waits |
+| 6 · Task C | see `calib` spin (busy-wait events), then sleep once fixed |
+| 6 · inversion | see who holds the lock while control waits |
 
 **Numbers from the analyzer, story from the trace.**
 

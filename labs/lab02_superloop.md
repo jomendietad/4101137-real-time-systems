@@ -153,7 +153,7 @@ never answers, TASK 3 is missing: `main()` ran off the end and there is no loop.
 | REQ-CTRL-02 | When pressure exceeds the threshold, the system shall close the valve within 5 ms. |
 
 - They go in **RET §1**, and from today on every piece of evidence cites the REQ it
-  verifies (e.g. "row 2 of the table verifies REQ-CTRL-03"). In week 8 you'll learn
+  verifies (e.g. "row 2 of the table verifies REQ-CTRL-03"). In week 7 you'll learn
   what industry calls this discipline.
 - **Evidence:** the requirements table in RET §1.
 

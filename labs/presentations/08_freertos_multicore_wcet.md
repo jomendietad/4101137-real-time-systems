@@ -15,7 +15,7 @@ style: |
 
 # FreeRTOS, two cores, and the worst case
 
-**Week 9** · the industry's kernel, honestly; partitioning; where C_i comes from
+**Week 8** · the industry's kernel, honestly; partitioning; where C_i comes from
 
 A customer demands FreeRTOS. What do you actually gain and lose?
 
@@ -34,7 +34,7 @@ been filling since week 2.
 1. **FreeRTOS**: the map, the strengths, the verdict
 2. **Multicore**: global or partitioned
 3. **WCET**: what measurement can and can't promise
-4. **Lab**: the hard loop alone on a core
+4. **Guided build**: the project's node, split across the cores
 
 Goal: argue when each kernel is right, and which multicore model protects the tail.
 
@@ -112,7 +112,7 @@ before reading the product.
 12:00–17:00. Global: one scheduler migrates tasks across cores; best average
 utilization, but migration jitter and shared-cache interference, and the
 uniprocessor analysis no longer applies directly. Partitioned: tasks pinned per
-core, each core analyzed alone with weeks 6–7. On the S3, Zephyr gives us
+core, each core analyzed alone with week 6. On the S3, Zephyr gives us
 partitioned by construction: sysbuild, one image per core, the hard loop alone on
 APPCPU with no console there (GPIO is the instrument, as always).
 -->
@@ -185,21 +185,21 @@ what ran before it.
 ---
 
 <!-- _class: s4 -->
-<!-- _header: 4 · Lab -->
+<!-- _header: 4 · Guided build -->
 
-## Today in the lab
+## Today: we build the project's node together
 
-| Predict now | Then measure |
-|---|---|
-| Loop max jitter, 1 core, synthetic load | ≥ 60 s on the analyzer |
-| Loop max jitter on APPCPU, load on PROCPU | the same protocol |
-| The averages of all three cases | the same captures |
+1. Both cores alive: the `ipm_esp32` sample, one flash
+2. The split: the hard path on APPCPU, everything else on PROCPU, IPM between them
+3. The tail table, with a synthetic load, and the inter-core hop
 
-The flow-sensor driver with its binding is a stretch task for groups that finish early.
+Predict the maxima now. Each step's check passes before anyone moves on.
 
 <!--
-27:00–32:00. Two images from one sysbuild (SOP-09). ADR-003 must cite the cost:
-two images, no console on APPCPU. Problem Set 2 is due today.
+27:00–32:00. Run each step on the projector first (SOP-08), then the pairs. Two
+images from one sysbuild; ADR-003 must cite the cost: two images, no console on
+APPCPU, and the hop an e-stop now takes to reach PROCPU. That hop joins the e2e
+budget at the kickoff; checkpoint 1 runs this node with CAN on PROCPU.
 -->
 
 ---

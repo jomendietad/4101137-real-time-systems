@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Figures for the week-7 deck (07_rta_inversion.md).
+"""Figures for the week-6 deck (06_schedulability.md).
 
     python3 rta_figs.py       # writes rta_iteration.svg, rta_inversion.svg here
 

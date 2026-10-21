@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Figures for the week-12 deck (12_isolation.md).
+"""Figures for the week-10 deck (10_deadline_isolation.md).
 
     python3 iso_figs.py       # writes iso_layers.svg here
 """

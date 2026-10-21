@@ -167,12 +167,12 @@ the measurement already answered it. Then: which one ships in a ventilator?
 - The **RET** (Timing Evidence Report): every timing claim cites a measurement
 - House rule: **"show me the trace"**
 
-| Labs, weeks 1–12 | Project, weeks 13–16 |
+| Labs, weeks 1–10 | Project, weeks 11–14 |
 |---|---|
 | 30 % | 70 % |
 
 <!--
-22:00–27:00. The briefing is PROJECT_SCENARIO.md. The workshop (week 8) is a
+22:00–27:00. The briefing is PROJECT_SCENARIO.md. The workshop (week 7) is a
 design review with an individual quiz; it counts as one of the labs. The project is
 the SoilSense Hub on PREEMPT_RT Linux, linked to the nodes over CAN.
 -->
@@ -192,7 +192,7 @@ the SoilSense Hub on PREEMPT_RT Linux, linked to the nodes over CAN.
 
 - Zephyr: `west`, CMake, devicetree (hardware as data; week 3 shows why)
 - `native_sim` for logic, never for timing numbers
-- FreeRTOS in every lab, as the comparison; week 9 is its session
+- FreeRTOS in every lab, as the comparison; week 8 is its session
 
 <!--
 27:00–32:00. The Zephyr version is pinned for the semester in west.yml: everyone,

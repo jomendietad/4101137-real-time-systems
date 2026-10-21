@@ -3,8 +3,8 @@
 - **Team:** `<names>`
 - **Boards:** `<serials/nicknames>`
 
-**Living document** — updated every week; handed in at the workshop (week 8) and
-at the close (week 16).
+**Living document** — updated every week; handed in at the workshop (week 7) and
+at the close (week 14).
 
 **House rule:** *"show me the trace"* — every timing claim cites a measurement.
 
@@ -42,13 +42,13 @@ U = ΣC_i/T_i with **measured** C_i; test used (RM / hyperbolic / EDF); RTA as a
 script with its output; blocking B_i if there are mutexes. (Formulas: READINGS.md,
 "The math that does get used".)
 
-From week 14: the CAN frame plan (IDs, periods, sizes), bus utilization and each
+From week 12: the CAN frame plan (IDs, periods, sizes), bus utilization and each
 frame's response time; then the end-to-end budget of each requirement that crosses
 the bus, hop by hop:
 
-| Requirement | Node `R` | CAN `R` | Hub wake-up (max) | Actuation | Sum | Deadline | Measured end to end |
-|---|---|---|---|---|---|---|---|
-| e-stop → pump stop | ____ | ____ | ____ | ____ | ____ | 20 ms | ____ |
+| Requirement | Node `R` (APPCPU) | IPM hop | CAN `R` | Hub wake-up (max) | Actuation | Sum | Deadline | Measured end to end |
+|---|---|---|---|---|---|---|---|---|
+| e-stop → pump stop | ____ | ____ | ____ | ____ | ____ | ____ | 20 ms | ____ |
 
 ## 5. Functional safety (final project)
 

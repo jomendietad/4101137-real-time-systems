@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Figures for the week-14 deck (14_can.md). Standard library only.
+"""Figures for the week-12 deck (12_can.md). Standard library only.
 
     python3 can_figs.py       # writes can_arbitration.svg and can_budget.svg here
 """
@@ -93,7 +93,7 @@ def budget():
     ly = y + 116
     lx = sx(rest) + 40
     for k, (mid, col, label) in enumerate((
-            (node_ms / 2, "c5", f"node: ≈ {node_ms:.0f} ms (week 6, ADR-005)"),
+            (node_ms / 2, "c5", f"node: ≈ {node_ms:.0f} ms to detect (ADR-005), plus the IPM hop (week 8)"),
             (node_ms + can_ms / 2, "c7", f"CAN: {can_ms * 1000:.0f} µs (1-byte frame, highest priority, 500 kbit/s)"))):
         yy = ly + k * 40
         body.append(f'<polyline points="{sx(mid)},{y + 70} {sx(mid)},{yy - 7} {lx - 8},{yy - 7}" fill="none" '
