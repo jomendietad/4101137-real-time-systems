@@ -2,6 +2,7 @@
 
 - **Team:** `<names>`
 - **Boards:** `<serials/nicknames>`
+- **AI use:** `<per week: tool, and what it did>`
 
 **Living document** — updated every week; handed in at the workshop (week 7) and
 at the close (week 14).
@@ -54,3 +55,15 @@ the bus, hop by hop:
 
 Declared safe state (failure ⇒ valve closed), watchdog, and the evidence of the
 fail-safe firing.
+
+## 6. Agent-built components (final project)
+
+The Hub's GUI and routing, built by an agent from `spec/hub-soft.md`. Tool, model
+and where the session log lives: `<…>`.
+
+| REQ | What the spec asks | How it was measured | Measured | Met? |
+|---|---|---|---|---|
+| REQ-HUB-xx | … | … | ____ | ____ |
+
+Deviations: where the agent's code departed from the spec, and which measurement
+caught it.

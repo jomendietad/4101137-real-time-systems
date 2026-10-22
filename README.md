@@ -64,9 +64,9 @@ Per-week readings, with what to skip: [READINGS.md](READINGS.md). Session guides
 | 8 | FreeRTOS, multicore, WCET | **Guided**: the node split across the two cores (AMP), kept for the project | ADR-003 draft; tail table; the inter-core hop |
 | 9 | PREEMPT_RT: what it changes in the kernel | SBC bring-up; `cyclictest` stock vs. RT | Latency histograms; the Hub's task set |
 | 10 | CBS → `SCHED_DEADLINE`; affinity, isolation, IRQ steering | FIFO vs. DEADLINE under a hog; the interference rig | CBS budget; ADR-004 |
-| 11 | Mixed criticality, partitioning, safety | Project kickoff: architecture and ADRs | ADR-P1–P4; ADR-P5 draft |
+| 11 | Mixed criticality, partitioning, safety | Project kickoff: architecture, ADRs and the agent's spec | ADR-P1–P4; ADR-P5 draft; the agent's spec |
 | 12 | CAN: the bus as a scheduled resource | Checkpoint 1: hard loop under load; AMP node and CAN link up | ADR-P5 with the bus RTA; ADR-003 closed |
-| 13 | — | Checkpoint 2: GUI + routing; e2e budget; the watchdog bites | End-to-end budget, measured |
+| 13 | — | Checkpoint 2: agent-built GUI + routing; e2e budget; the watchdog bites | End-to-end budget, measured; the agent's code against its spec |
 | 14 | — | **Demo day** | Final RET |
 
 ## Assessment
@@ -75,6 +75,17 @@ Per-week readings, with what to skip: [READINGS.md](READINGS.md). Session guides
 |---|---|
 | Labs, weeks 1–10, each graded by its rubric (the week-7 workshop counts as one; week 8 is guided and feeds the project) | 30 % |
 | Project, weeks 11–14: kickoff 20 · checkpoint 1 15 · checkpoint 2 20 · demo day 45 | 70 % |
+
+## AI use
+
+| Activity | AI |
+|---|---|
+| The workshop quiz and every defense in class | Not allowed: these show what each of you knows |
+| Labs and the rest of the project: firmware, scripts, RET prose | Allowed, and declared in the RET: tool and what it did |
+| The Hub's GUI and routing (weeks 11–13) | Required: an agent builds them from your spec, and the RET shows by measurement whether it met it |
+
+Every measured value comes from your team's hardware. A number an AI wrote is not
+evidence.
 
 ## Hardware and cost
 

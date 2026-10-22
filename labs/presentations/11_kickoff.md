@@ -160,15 +160,18 @@ derive from it); DO-178C is avionics.
 
 | Week | Milestone | Passes with… |
 |---|---|---|
-| 11 | Kickoff | ADR-P1–P4 defended with evidence; ADR-P5 (the bus) drafted |
+| 11 | Kickoff | ADR-P1–P4 defended; ADR-P5 (the bus) drafted; the agent's spec |
 | 12 | Checkpoint 1 | the hard loop under load, misses = 0; the AMP node and CAN link up; bus RTA |
-| 13 | Checkpoint 2 | GUI + routing; the e2e budget measured; the watchdog bites live |
+| 13 | Checkpoint 2 | the agent's GUI + routing vs. its spec; e2e budget measured; the watchdog bites |
 | 14 | Demo day | live demo, final RET, honest postmortem |
 
 <!--
 26:00–30:00. Checkpoint targets are numbers with a load condition, not
 "progress". The kernel comparison retires undefeated: ADR-P1's MCU option can be
 Zephyr or FreeRTOS; the partitioning argument is kernel-agnostic.
+An agent builds the GUI and routing from the team's spec: week 10's "software we
+didn't write", made literal. The CBS reservation is what protects the loop from it,
+and the analyzer is what judges it.
 -->
 
 ---

@@ -56,7 +56,9 @@ by priority, so the bus has its own RTA), and the Hub's wake-up latency.
 
 **The design challenge**: prove the hard loop meets its deadlines *while* the GUI
 renders and the routing takes traffic bursts — with evidence (`cyclictest` and
-traces under synthetic load). Plus the partitioning ADR: which functions live in
+traces under synthetic load). GreenField builds those two with an AI agent, from
+a spec the team writes, so the Hub runs code nobody on the team typed. Plus the
+partitioning ADR: which functions live in
 Linux and which on the MCU (ESP32-S3), and why.
 
 **Safety requirement (explicit deliverable)**: the system declares its **safe

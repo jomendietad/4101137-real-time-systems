@@ -158,6 +158,8 @@ mirrors the task model. Live rewrite on the board with the class: "sampling must
 be fast and regular" becomes "While irrigating, the system shall sample pressure
 every 1 ms with jitter below X µs", where X is what the lab measures today.
 Requirements and baselines are born together.
+Same grammar outside this room: spec-driven AI tools (Kiro) write their
+requirements in EARS, and in week 11 the class hands its own to an agent.
 Misconception to anticipate: "requirements are paperwork". From today every piece
 of evidence cites one; that is what makes week 7's defense possible. Don't say
 "RTM" yet: that name is week 7's reveal.
