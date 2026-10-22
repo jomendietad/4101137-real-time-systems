@@ -9,12 +9,22 @@ event boundary even when the USB-serial bridge still holds bytes from an earlier
 stream. Zephyr's trace_capture_uart.py skips that step and reads one byte per call.
 """
 import argparse
+import signal
 import time
 
 import serial
 
 
+def stop(signum, frame):
+    raise KeyboardInterrupt
+
+
 def main():
+    # Ctrl-C works even when started as a background job, and kill (SIGTERM) stops
+    # it the same way: tracing disabled, file complete.
+    signal.signal(signal.SIGINT, stop)
+    signal.signal(signal.SIGTERM, stop)
+
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("-d", "--device", required=True, help="the UART jack's serial port")
     ap.add_argument("-b", "--baud", type=int, default=4_000_000, help="as in uart_trace.overlay")
@@ -31,7 +41,7 @@ def main():
     port.write(b"enable\r")
     total, t0 = 0, time.monotonic()
     try:
-        with open(a.output, "wb") as out:
+        with open(a.output, "wb", buffering=0) as out:
             while a.seconds is None or time.monotonic() - t0 < a.seconds:
                 data = port.read(max(1, port.in_waiting))
                 out.write(data)
