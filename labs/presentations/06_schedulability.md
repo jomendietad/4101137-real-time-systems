@@ -33,13 +33,13 @@ e-stop has a 5 ms deadline, not a percentage.
 
 ## Today
 
-1. **Utilization**: the load, and what the RM tests promise
-2. **EDF**: Fig. 4.13, live
-3. **Response time**: each task's worst case, by iteration
+1. **Utilization**: the load, and the rate-monotonic (RM) tests
+2. **EDF**, earliest deadline first: Fig. 4.13, live
+3. **Response time analysis** (RTA): each task's worst case, by iteration
 4. **Inversion**: low holds, high waits, medium runs
 5. **Lab**: what you'll measure
 
-Goal: apply the RM and EDF tests, run RTA by hand, and bound the blocking a mutex adds.
+Goal: apply both tests, run RTA by hand, and bound a mutex's blocking.
 
 <!--
 1:30–2:30. Reading: Buttazzo §4.1–4.5.2, §4.7, §3.3.1 (EDF optimality,
@@ -77,7 +77,8 @@ this sum? (The console: it is not periodic. Week 10's servers handle that.)
 ![h:400](img/sc_bounds.svg)
 
 <!--
-4:00–7:00. Liu & Layland: U ≤ n(2^(1/n) − 1) guarantees RM; 0.83 for two tasks,
+4:00–7:00. RM: fixed priorities, shorter period (higher rate) wins, set once.
+Liu & Layland: U ≤ n(2^(1/n) − 1) guarantees RM; 0.83 for two tasks,
 → ln 2 ≈ 0.69 as n grows. Hyperbolic test, ∏(U_i + 1) ≤ 2: same idea, less
 pessimistic. Both are sufficient: passing proves schedulable, failing proves
 nothing. The amber zone is "maybe": segment 3's RTA decides it task by task.
@@ -279,8 +280,8 @@ runs. For mutual exclusion across priorities: a PI mutex, always.
 $$R_i = C_i + B_i + \sum_{h < i} \left\lceil \frac{R_i}{T_h} \right\rceil C_h$$
 
 - $B_i$: the longest critical sections that can block task $i$ (Theorem 7.2)
-- Zephyr's `k_mutex` inherits priority; `k_sem` doesn't
-- PCP (ceilings): no deadlock, at most one blocking; worth knowing it exists
+- Priority inheritance protocol (PIP): Zephyr's `k_mutex` does it; `k_sem` doesn't
+- Priority ceiling protocol (PCP): no deadlock, at most one blocking; worth knowing it exists
 
 <!--
 29:00–31:00. Under PIP a task can be blocked at most once per lower-priority task

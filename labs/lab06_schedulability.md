@@ -2,13 +2,14 @@
 > - **Talk:** [06_schedulability](presentations/06_schedulability.md)
 > - **Reading:** [READINGS.md](../READINGS.md), week 6 (includes the optional Lee & Seshia)
 > - **Module:** 3
-> - **The Problem Set goes out today** (exercises from chs. 2, 4 and 7 + RTA; due at the workshop, week 7).
+> - **The Problem Set goes out today** (exercises from chs. 2, 4 and 7 + response time analysis, RTA; due at the workshop, week 7).
 
 **From:** Eng. Samuel Cifuentes — *"Daniela is asking whether she can add two more
 sensors to the node. Answer like engineers: not 'let's try and see', but
 'utilization lands at X, the test says Y, the worst response is Z'. Since I don't
 trust theorems any more than I trust you, reproduce the famous case for me: a task
-set that RM misses and EDF meets, on our board. Then watch the mutexes: Pathfinder
+set that rate monotonic (RM) misses and earliest deadline first (EDF) meets, on our
+board. Then watch the mutexes: Pathfinder
 rebooted on Mars because of a priority inversion. Reproduce it here, where it costs
 a laugh and not a mission. And before anyone says yes to Daniela: `calib` spins for
 400 ms against a 1 s deadline, and the e-stop waits for control. Fix both at the
