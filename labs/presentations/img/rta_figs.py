@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 """Figures for the week-6 deck (06_schedulability.md).
 
-    python3 rta_figs.py       # writes rta_iteration.svg, rta_inversion.svg here
+    python3 rta_figs.py       # writes rta_iteration.svg, rta_window.svg, rta_inversion.svg here
 
-Both are computed: the RTA iterates Buttazzo Table 4.3; the inversion is simulated.
+All are computed: the RTA iterates Buttazzo Table 4.3 and Fig. 4.13's τ2; the inversion is simulated.
 """
 import math
 from pathlib import Path
 
 from figlib import C, GRID, INK, MUTED, T, line, poly, rect, save, svg, text
+from sc_figs import TASKS
 
 HERE = Path(__file__).resolve().parent
 
 TABLE_4_3 = [(1, 4, 3), (1, 5, 4), (2, 6, 5), (1, 11, 10)]  # (C, T, D), deadline-monotonic order
+FIG_4_13 = [(c, p, p) for _, c, p, _ in TASKS]
 
 
 def rta_steps(tasks, i):
@@ -56,6 +58,48 @@ def iteration():
             body.append(text(tx + 40 + j * 70, y, str(v), 20, 700 if j == 0 else 400, INK, "middle"))
     body.append(text(tx, 330, f"fixed point: R₄ = {steps[-1]} ≤ D₄", 22, 700, C["c3"]))
     return svg(1160, 470, body)
+
+
+def window():
+    """RTA on Fig. 4.13's τ2, one row per step: the window R and the τ1 releases it holds."""
+    (c1, t1, _), (c2, _, d2) = FIG_4_13
+    col1, col2 = TASKS[0][3], TASKS[1][3]
+    steps = rta_steps(FIG_4_13, 1)
+    x0, unit, row, top, span = 190, 52, 104, 96, 10
+    sx = lambda t: x0 + t * unit
+
+    def release(x, y0, y1, col, sw):  # the open chevron of sc_fig413.svg
+        return (line(x, y0, x, y1, col, sw)
+                + f'<path d="M{x - 6} {y1 + 9} L{x} {y1} L{x + 6} {y1 + 9}" fill="none" stroke="{col}" stroke-width="{sw}"/>')
+
+    body = [text(20, 36, f"τ1: C = {c1}, T = {t1}", 22, 700, C[col1]),
+            text(300, 36, f"τ2: C = {c2}, T = D = {d2}", 22, 700, C[col2])]
+    tx = sx(span) + 50
+    for k, r in enumerate(steps):
+        ly = top + k * row
+        axis = ly + 58
+        late = r > d2
+        body.append(text(x0 - 30, ly + 40, f"R = {r}", 24, 700, C["c5"] if late else C[col2], "end"))
+        body.append(rect(sx(0), ly + 12, r * unit, 40, T[col2], C[col2], 2, 6))
+        body.append(line(sx(0), axis, sx(span), axis, GRID, 2))
+        for a in range(0, span + 1, t1):
+            inside = a < r
+            body.append(release(sx(a), axis, ly + 4, C[col1] if inside else MUTED, 4 if inside else 2))
+        if late:
+            body.append(text(tx, ly + 32, f"{r} > D₂ = {d2}: stop", 24, 700, C["c5"]))
+            body.append(text(tx, ly + 60, "τ2 misses, as on the RM timeline", 20, 400, C["c5"]))
+        else:
+            n = math.ceil(r / t1)
+            body.append(text(tx, ly + 32, f"{c2} + ⌈{r}/{t1}⌉·{c1} = {steps[k + 1]}", 24, 700, INK))
+            body.append(text(tx, ly + 60, f"{n} release{'s' if n > 1 else ''} of τ1 inside", 20, 400, MUTED))
+    bottom = top + len(steps) * row - 30
+    body.append(line(sx(d2), top - 6, sx(d2), bottom, C["c5"], 3, "8 6"))
+    body.append(text(sx(d2), top - 14, f"D₂ = {d2}", 20, 700, C["c5"], "middle"))
+    for t in range(0, span + 1, t1):
+        body.append(text(sx(t), bottom + 26, str(t), 18, 400, MUTED, "middle"))
+    body.append(text(x0, bottom + 64, "↑ τ1 release · shaded: τ2's window · the ceiling counts the arrows inside it",
+                     18, 400, MUTED))
+    return svg(1160, bottom + 76, body)
 
 
 def simulate(tasks, inherit, horizon):
@@ -145,10 +189,12 @@ def inversion():
 
 if __name__ == "__main__":
     assert rta_steps(TABLE_4_3, 3) == [1, 5, 6, 7, 9, 10, 10]
+    assert rta_steps(FIG_4_13, 1) == [4, 6, 8], "Fig. 4.13: τ2's R passes D = 7 at the third step"
     sem, pip = simulate(SCENARIO, False, 17), simulate(SCENARIO, True, 17)
     assert sum(s == "blocked" for s in pip["H"]) == 3 and finish(pip["H"]) == 9, "PIP: H waits for L's critical section only"
     assert sum(s == "blocked" for s in sem["H"]) == 9 and finish(sem["H"]) == 15, "no PIP: M's 6 units land on H"
     assert finish(sem["H"]) > finish(pip["H"])
     save(HERE, "rta_iteration.svg", iteration())
+    save(HERE, "rta_window.svg", window())
     save(HERE, "rta_inversion.svg", inversion())
-    print("rta_iteration.svg rta_inversion.svg")
+    print("rta_iteration.svg rta_window.svg rta_inversion.svg")

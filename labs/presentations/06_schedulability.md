@@ -169,14 +169,33 @@ script is homework; the workshop re-runs it live.
 <!-- _class: s3 figure -->
 <!-- _header: 3 · Response time -->
 
-## The book's example, step by step
+## Where the bound said "maybe", RTA says τ2 misses
+
+![h:430](img/rta_window.svg)
+
+<!--
+17:00–19:00. Fig. 4.13 again, computed by img/rta_figs.py. Segment 1 left it at
+"0.97 > 0.83, can't tell". Work it on the board: τ2's window starts at its own
+C = 4 and holds one τ1 release, so 4 + 2 = 6. Now the window reaches t = 5 and
+catches the second: 4 + 4 = 8, past D2 = 7, stop. The RM timeline showed τ2
+finishing at exactly 8. Misconception to anticipate: "the ceiling rounds up a
+ratio". It counts arrows inside the window.
+-->
+
+---
+
+<!-- _class: s3 figure -->
+<!-- _header: 3 · Response time -->
+
+## Four tasks, same method: it settles at the deadline
 
 ![h:430](img/rta_iteration.svg)
 
 <!--
-17:00–20:00. Buttazzo Table 4.3, computed by img/rta_figs.py. Work steps 1 and 2 on
-the board: R = 1 + ⌈1/4⌉·1 + ⌈1/5⌉·1 + ⌈1/6⌉·2 = 5; then with R = 5 the window
-holds two releases of τ1. It settles at 10, exactly D4.
+19:00–20:00. Buttazzo Table 4.3, computed by img/rta_figs.py. Same loop, three
+terms in the sum instead of one. Here D < T, so priorities follow deadlines, not
+periods; RTA takes the priorities as given, whatever chose them. It settles at
+10, exactly D4: schedulable, with no slack.
 -->
 
 ---
