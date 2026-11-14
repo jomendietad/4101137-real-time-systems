@@ -2,9 +2,10 @@
 
 * **Team:** `Johan Sebastian Mendieta Dilbert, Jeronimo Novoa Giraldo`
 * **Boards:** Nucleo-L476RG (STM32L476RG) / ESP32-S3 DevKitC (esp32s3_devkitc_esp32s3_procpu)
+* **AI use:** Week 6 documentation integration used OpenAI GPT-5.6 to organize existing evidence, compare the report with authorized public sources, and review consistency. AI did not produce, execute, or validate any timing measurement.
 
-**Living document** — updated every week; handed in at the workshop (week 8) and
-at the close (week 16).
+**Living document** — updated every week; handed in at the workshop (week 7) and
+at the close (week 14).
 
 **House rule:** *"show me the trace"* — every timing claim cites a measurement.
 
@@ -15,23 +16,24 @@ system shall `<response>` within `<deadline>*`) — then the task that implement
 
 | ID | Requirement |
 | --- | --- |
-| REQ-CTRL-01 | While the system is powered on, the superloop shall execute `task_sampling()` with a nominal sampling period of $1000\ \mu\text{s}$ and a maximum jitter of $\le 50\ \mu\text{s}$. |
-| REQ-CTRL-02 | While irrigation control is active, the control loop (`task_control()`) shall run every $10\text{ ms}$ with a maximum execution deadline of $1000\ \mu\text{s}$. |
-| REQ-FLOW-03 | When flow meter pulse interrupts occur, `task_flow_batch()` shall process accumulated edge events within $500\ \mu\text{s}$ of the main loop iteration. |
-| REQ-CONS-04 | When CLI input is received over UART, `task_console()` shall parse the command stream without blocking the main loop for more than $200\ \mu\text{s}$. |
-| REQ-SAFE-05 | When measured pressure exceeds the threshold, the system shall assert the valve cutoff signal within $10\text{ ms}$ ($1\text{ control tick}$). |
+| REQ-CTRL-01 | While the system is irrigating, the control loop shall run every $10\text{ ms}$ with its deadline equal to its period. |
+| REQ-CTRL-02 | When measured pressure exceeds the threshold, the system shall close the valve in less than $5\text{ ms}$. |
+| REQ-CTRL-03 | While the system is powered on, `task_sampling()` shall run with a nominal period of $1000\ \mu\text{s}$ and maximum jitter of $\le 50\ \mu\text{s}$. |
+| REQ-CONS-01 | When `calib` is requested, the firm console command shall complete within $1\text{ s}$. |
 | REQ-PERF-06 | While the system operates under nominal workload, the loop tick backlog (`backlog_peak`) shall not exceed $2\text{ ticks}$ ($2000\ \mu\text{s}$). |
 
 | Task | Req. | Type (H/F/S) | Period | Deadline | Measured $C_i$ | How it was measured |
 | --- | --- | --- | --- | --- | --- | --- |
-| `task_sampling` | REQ-CTRL-01 | Hard | $1\text{ ms}$ | $1\text{ ms}$ | $0.75\ \mu\text{s}$ `[GPIO]` / $33.84\ \mu\text{s}$ `[Trace]` | GPIO D3 + Logic Analyzer (S3 @ 100 MHz) / CTF Trace |
-| `task_control` | REQ-CTRL-02 | Hard | $10\text{ ms}$ | $1\text{ ms}$ | $1.35\ \mu\text{s}$ `[GPIO]` / $82.78\ \mu\text{s}$ `[Trace]` | GPIO D4 + Logic Analyzer / CTF Trace |
-| `task_flow_batch` | REQ-FLOW-03 | Firm | Event | $500\ \mu\text{s}$ | $12.81\ \mu\text{s}$ `[GPIO]` | GPIO D5 + Logic Analyzer |
-| `task_console` | REQ-CONS-04 | Soft | Polled | $200\ \mu\text{s}$ | $5794.55\ \mu\text{s}$ `[GPIO]` / $51.66\ \mu\text{s}$ `[Trace]` | GPIO D6 + Logic Analyzer / CTF Trace |
-| `task_display` | N/A | Soft | Polled | N/A | $47.39\ \mu\text{s}$ `[Trace]` | GPIO D7 + Logic Analyzer / CTF Trace |
-| `task_telemetry` | N/A | Soft | Polled | N/A | $62.41\ \mu\text{s}$ `[Trace]` | GPIO D8 + Logic Analyzer / CTF Trace |
+| `task_sampling` | REQ-CTRL-03 | Hard | $1\text{ ms}$ | $1\text{ ms}$ | $0.75\ \mu\text{s}$ `[GPIO]` / $33.84\ \mu\text{s}$ `[Trace]` | D3 / GPIO4 + logic analyzer / CTF trace |
+| `task_control` | REQ-CTRL-01 | Hard | $10\text{ ms}$ | $10\text{ ms}$ | $1.35\ \mu\text{s}$ `[GPIO]` / $82.78\ \mu\text{s}$ `[Trace]` | D4 / GPIO5 + logic analyzer / CTF trace |
+| `task_flow_batch` | N/A | Unclassified deferred work | Every 100 flow pulses | Not specified | $12.81\ \mu\text{s}$ `[GPIO]` | D7 / GPIO15 + logic analyzer |
+| `task_console` | REQ-CONS-01 | Firm | Polled | $1\text{ s}$ for `calib` | $5794.55\ \mu\text{s}$ `[GPIO]` / $51.66\ \mu\text{s}$ `[Trace]` | D5 / GPIO6 + logic analyzer / CTF trace |
+| `task_display` | N/A | Soft | $500\text{ ms}$ | N/A | $47.39\ \mu\text{s}$ `[Trace]` | D8 / GPIO17 + logic analyzer / CTF trace |
+| `task_telemetry` | N/A | Soft | $1\text{ s}$ | N/A | $62.41\ \mu\text{s}$ `[Trace]` | D6 / GPIO7 + logic analyzer / CTF trace |
 
 *Note: Instrument annotation bracket `[GPIO]` indicates physical pin toggling measurement; `[Trace]` indicates software kernel instrumentation hook measurement via CTF.*
+
+The public [`PROJECT_SCENARIO.md`](https://github.com/jomendietad/4101137-real-time-systems/blob/main/PROJECT_SCENARIO.md), Week 2 guide, and firmware README support the listed classifications and deadlines for sampling, control, console, telemetry, display, and the e-stop path. The hard flow classification applies to the pulse-counting ISR; `task_flow_batch()` is deferred batch math and the public README leaves its type and deadline unspecified. The D3–D8 order and ESP32-S3 GPIO mapping come from the public instrumentation overlays. The e-stop is an end-to-end path detected in sampling and actuated at the valve; it is not represented as an independent periodic task.
 
 ## 2. ADRs
 
@@ -39,8 +41,22 @@ system shall `<response>` within `<deadline>*`) — then the task that implement
 
 * **Context:** In Weeks 2 and 3, the cooperative superloop architecture suffered from severe temporal interference. Synchronous blocking operations such as `calib` (1000 iterations of 400 µs busy-waits in `task_console`) stalled execution in `main()`, causing the control period to stretch from 10 ms to 102 ms (and up to >1000 ms), while sampling jitter exceeded 14000 µs.
 * **Decision:** Migrate all application tasks to a fully preemptive multi-threaded model on the Zephyr RTOS kernel, assigning Rate-Monotonic priorities (`sampling_thread`=2, `control_thread`=3, `flow_wq`=5, `display_thread`=7, `telemetry_thread`=8, `console_thread`=9) and deploying a dedicated workqueue for flow pulse processing.
-* **Justification (with numbers):** The A/B comparison confirms complete temporal isolation under load. Under `calib`, sampling jitter dropped from $14200.0\ \mu\text{s}$ (superloop) to **$3.2\ \mu\text{s}$** (kernel RTOS), and the maximum control period was restored from $102.0\text{ ms}$ to **$10.02\text{ ms}$**. The measured context-switch overhead between sampling and control is **$2.4\ \mu\text{s}$**, representing an overall CPU capacity usage penalty of **$0.312\%$**. Max stack utilization across user threads remained at 50% (`console_tid` at 1024 / 2048 bytes).
+* **Justification (with numbers):** The A/B comparison reports sampling jitter falling from $14200.0\ \mu\text{s}$ (superloop) to **$3.2\ \mu\text{s}$** (kernel RTOS), while the maximum control period returns from $102.0\text{ ms}$ to **$10.02\text{ ms}$**. A visible sampling-to-control GPIO gap of **$2.4\ \mu\text{s}$** was measured. The previously quoted **$0.312\%$** CPU penalty is only an unvalidated estimate because its assumed $\sim1300$ switches/s was not measured. Max reported user-thread stack utilization remained 50% (`console_tid` at 1024 / 2048 bytes).
 * **Status:** Accepted.
+
+### ADR-002 — Cross-priority mutual exclusion uses PI mutexes
+
+* **Context:** A binary semaphore used as a lock allows a medium-priority thread to prolong the blocking of high-priority control while low-priority console owns the resource.
+* **Decision:** Resources shared across priorities shall use a Zephyr `k_mutex` with priority inheritance, not a bare binary `k_sem` used as a lock.
+* **Justification:** No-contention response-time analysis gives $R_{ctrl}=116.62\ \mu\text{s}$. With blocking, the full recurrence includes one sampling interference term per crossed millisecond; against the canonical $10\text{ ms}$ control deadline, the boundary calculation gives $B\le9578.82\ \mu\text{s}$ when ten sampling jobs interfere. The local captures are present but unannotated and do not measure $B$ or establish the complete no-contention/inversion/PI sequence.
+* **Status:** Policy accepted; measured $B$ and empirical before/after validation remain pending.
+
+### ADR-005 — Remove `calib` spinning and close the valve in the detecting job
+
+* **Context:** The documented pre-fix `calib` loop demands approximately $400\text{ ms}$ of CPU, and the pre-fix e-stop path can wait one sampling period, one control period, and one PWM update (analytical bound: $12\text{ ms}$), which exceeds REQ-CTRL-02.
+* **Decision:** Replace each `k_busy_wait(400)` settle with `k_usleep(400)`, and set `duty_pct = 0` in the overpressure branch of `task_sampling()` so the same sampling job can drive the valve low.
+* **Justification:** The period-based post-fix estimate is approximately $1.034\text{ ms}$, below $5\text{ ms}$, and sleeping releases CPU capacity. The current public `firmware/kernel/src/main.c` still shows the pre-fix implementation, while the local Task C capture appears post-fix but lacks a before capture, cursors, and five repetitions. Therefore neither implementation completion nor physical maxima are claimed here.
+* **Status:** Design accepted; source integration and measured before/after verification remain pending.
 
 ## 3. Evidence by week
 
@@ -50,37 +66,23 @@ Each entry cites the `REQ`(s) it verifies.
 
 #### Iteration Loop Measurement Matrix
 
-| Quantity | Prediction | Your value | Target |
-| --- | --- | --- | --- |
-| Edit $\rightarrow$ build $\rightarrow$ flash $\rightarrow$ message on the console, one member's laptop | $35.0\text{ s}$ | **$27.4\text{ s}$** | $< 60\text{ s}$ |
+| Quantity | Prediction | Measured value | Target |
+| --- | ---: | ---: | ---: |
+| Edit $\rightarrow$ build $\rightarrow$ flash $\rightarrow$ console message, one member's laptop | $35.0\text{ s}$ | **$27.4\text{ s}$** | $<60\text{ s}$ |
 | Same, incremental build (one line changed, no `-p`) | $10.0\text{ s}$ | **$6.8\text{ s}$** | — |
-| Members with `blinky` running from their own laptop | — | **$2 / 2$** | all |
+| Members with `blinky` running from their own laptop | — | **$2/2$** | all |
 
-#### Toolchain & Board Bring-Up Verification (Tasks A, B & C)
+#### Toolchain and board bring-up verification (Tasks A, B, and C)
 
-1. **Cross-Check on `nucleo_l476rg` & `native_sim` (Task A):**
-* Both team members (`Johan Sebastian Mendieta Dilbert` and `Jeronimo Novoa Giraldo`) independently verified the Zephyr workspace (`~/rts`) and toolchain by building and executing `zephyr/samples/basic/blinky` first on the host simulator (`west build -p -b native_sim zephyr/samples/basic/blinky`) and subsequently on hardware (`west build -p -b nucleo_l476rg zephyr/samples/basic/blinky && west flash`).
-* **Hardware Evidence:** On-board user LED (`LD2`, `PA5`) toggled at $1\text{ Hz}$ ($500\text{ ms}$ ON / $500\text{ ms}$ OFF) on the Nucleo-L476RG after flashing from each member's laptop.
+1. **Cross-check on `nucleo_l476rg` and `native_sim`:** Both team members built and ran `zephyr/samples/basic/blinky` on the host simulator and then on the Nucleo-L476RG. The on-board LD2 (PA5) toggled at $1\text{ Hz}$ after flashing from each laptop.
+2. **Serial console and build cycle:** The ST-Link virtual COM port was used at `115200 8N1`. The reported pristine cycle was $27.4\text{ s}$ ($23.1\text{ s}$ build plus $4.3\text{ s}$ flash/reset); the incremental cycle was $6.8\text{ s}$ ($2.5\text{ s}$ build plus $4.3\text{ s}$ flash/reset), a reported $4.03\times$ reduction.
 
+   ```text
+   *** Booting Zephyr OS build v4.1.0 ***
+   Hello World! SoilSense Control Team (Johan & Jeronimo) - nucleo_l476rg
+   ```
 
-2. **Serial Console & Build Cycle Breakdown (Task B):**
-* Connected to the ST-Link Virtual COM port at `115200 8N1` (`minicom` / `tio`) after flashing `zephyr/samples/hello_world`.
-* Edited the print string in `src/main.c` and measured two complete edit-to-console cycles:
-* **Pristine cycle (`west build -p` + `west flash`):** **$27.4\text{ s}$** total ($23.1\text{ s}$ CMake/Devicetree/kernel full compile + $4.3\text{ s}$ OpenOCD flash and target reset), satisfying the $< 60\text{ s}$ stakeholder requirement.
-* **Incremental cycle (`west build` without `-p` + `west flash`):** **$6.8\text{ s}$** total ($2.5\text{ s}$ Ninja incremental recompile and link + $4.3\text{ s}$ flash and target reset), achieving a **$4.03\times$** reduction in iteration latency.
-
-
-
-
-
-```text
-*** Booting Zephyr OS build v4.1.0 ***
-Hello World! SoilSense Control Team (Johan & Jeronimo) - nucleo_l476rg
-
-```
-
-3. **Team RET Initialization & Initial Task Set (Task C):**
-* Initialized the team repository under Git version control with `ret.md` (`Header + §1`), defining the initial SoilSense Control task set (`task_sampling` at $1\text{ ms}$, `task_control` at $10\text{ ms}$, event-driven `task_flow_batch`, and polled soft tasks `task_console`, `task_display`, and `task_telemetry` mapped to **REQ-CTRL-01** through **REQ-PERF-06**) with unmeasured execution times initialized to `____` ahead of Week 2 hardware instrumentation.
+3. **Initial RET and task set:** The team initialized the report and the original task set before Week 2 instrumentation. These historical Week 1 measurements are imported from `ret (1).md`; no additional Week 1 evidence was supplied in this local unit.
 
 ### Week 2 — superloop baseline (Nucleo-L476RG)
 
@@ -97,29 +99,29 @@ Hello World! SoilSense Control Team (Johan & Jeronimo) - nucleo_l476rg
 ▼
 
 ┌───────────────────────────────────────────────────────────────┐
-│ [1] INICIO: main() -> Entrada al bucle mientras(1)            │
+│ [1] START: main() -> enter while (1)                          │
 └──────────────────────────────┬────────────────────────────────┘
 │
 ▼
 ┌───────────────────────────────────────────────────────────────┐
-│ [2] task_console()        (Conmutación GPIO D3 HIGH -> LOW)   │
+│ [2] task_console()               (GPIO D5 HIGH -> LOW)        │
 └──────────────────────────────┬────────────────────────────────┘
 │
 ▼
 ┌───────────────────────────────────────────────────────────────┐
-│ [3] task_display()        (Conmutación GPIO D4 HIGH -> LOW)   │
+│ [3] task_display()               (GPIO D8 HIGH -> LOW)        │
 └──────────────────────────────┬────────────────────────────────┘
 │
 ▼
 ┌───────────────────────────────────────────────────────────────┐
-│ [4] task_telemetry()      (Conmutación GPIO D5 HIGH -> LOW)   │
+│ [4] task_telemetry()             (GPIO D6 HIGH -> LOW)        │
 └──────────────────────────────┬────────────────────────────────┘
 │
 ▼
 ┌───────────────────────────────────────────────────────────────┐
-│ [5] DECISIÓN: ¿ atomic_get(&ticks_pending) > 0 ?              │
+│ [5] DECISION: atomic_get(&ticks_pending) > 0?                 │
 └──────────────┬─────────────────────────────────┬──────────────┘
-│ SÍ                                             │ NO
+│ YES                                            │ NO
 ▼                                                │
 ┌──────────────────────────────┐                 │
 │ atomic_dec(&ticks_pending)   │                 │
@@ -128,18 +130,18 @@ Hello World! SoilSense Control Team (Johan & Jeronimo) - nucleo_l476rg
 ▼                                                │
 ┌──────────────────────────────┐                 │
 │ [6] task_sampling()          │                 │
-│      (GPIO D6 HIGH -> LOW)   │                 │
+│      (GPIO D3 HIGH -> LOW)   │                 │
 └──────────────┬───────────────┘                 │
 │                                                │
 ▼                                                │
 ┌──────────────────────────────┐                 │
-│ [7] ¿ ++control_div >= 10 ?  │                 │
+│ [7] ++control_div >= 10?     │                 │
 └──────┬───────────────┬───────┘                 │
-│ SÍ               │ NO                          │
+│ YES              │ NO                          │
 ▼                  │                             │
 ┌────────────────────┐ │                         │
 │ [8] task_control() │ │                         │
-│   (GPIO D7 H -> L) │ │                         │
+│   (GPIO D4 H -> L) │ │                         │
 └──────┬─────────────┘ │                         │
 │                │                               │
 └───────┬────────┘                               │
@@ -148,12 +150,12 @@ Hello World! SoilSense Control Team (Johan & Jeronimo) - nucleo_l476rg
 │
 ▼
 ┌───────────────────────────────────────────────────────────────┐
-│ [9] task_flow_batch()     (Conmutación GPIO D8 HIGH -> LOW)   │
+│ [9] task_flow_batch()            (GPIO D7 HIGH -> LOW)        │
 └──────────────────────────┬────────────────────────────────────┘
 │
 ▼
 ┌───────────────────────────────────────────────────────────────┐
-│ [10] FIN DE ITERACIÓN -> Retorno a [1]                         │
+│ [10] END OF ITERATION -> return to [1]                         │
 └───────────────────────────────────────────────────────────────┘
 
 
@@ -163,21 +165,38 @@ Hello World! SoilSense Control Team (Johan & Jeronimo) - nucleo_l476rg
 
 | Measurement | Your value | Reference / Verified REQ |
 | --- | --- | --- |
-| Actual sampling period (nominal 1 kHz): average | **997.89 µs** | $1000\ \mu\text{s}$ (Verifica **REQ-CTRL-01**) |
+| Actual sampling period (nominal 1 kHz): average | **997.89 µs** | $1000\ \mu\text{s}$ (verifies **REQ-CTRL-03**) |
 | Sampling jitter: max over $\ge 30\text{ s}$ | **5581.46 µs** | Course baseline |
-| ISR $\rightarrow$ loop-service latency (`task_flow_batch`) | **12.81 µs** (Prom) / **29.42 µs** (Máx) | Verifica **REQ-FLOW-03** |
+| ISR $\rightarrow$ loop-service latency (`task_flow_batch`) | **12.81 µs** (average) / **29.42 µs** (maximum) | Historical measured baseline; the public guide specifies no canonical deadline for this row |
 | Sampling jitter, max, **with the flash cache off** | **6798.46 µs** | Gap vs row 2 is the ART accelerator |
-| Sampling jitter **with the blocking command active** | **6663.79 µs** | Violación de **REQ-CONS-04** y **REQ-CTRL-01** |
-| `backlog_peak`, idle $\rightarrow$ during the blocking command | **1 $\rightarrow$ 6 ticks** | Verifica **REQ-PERF-06** |
+| Sampling jitter **with the blocking command active** | **6663.79 µs** | Violates **REQ-CTRL-03**; `calib` completion against **REQ-CONS-01** was not timed here |
+| `backlog_peak`, idle $\rightarrow$ during the blocking command | **1 $\rightarrow$ 6 ticks** | Verifies **REQ-PERF-06** |
 
 #### Root-Cause Analysis & Observations
 
 * **Impact of Disabling Flash Cache (`nocache.conf`):** Disabling the ART Accelerator and instruction prefetch buffer forces the STM32L476RG CPU to introduce wait states on every Flash fetch. This increases task execution times $C_i$ (e.g., `task_sampling` increases from $4.94\ \mu\text{s}$ to $7.26\ \mu\text{s}$), widening the loop pass duration and increasing worst-case sampling jitter.
-* **Degradation under Blocking Command (`calib`):** In a non-preemptive superloop, tasks execute cooperatively to completion. The calibration routine inside `task_console()` (`firmware/superloop/src/console.c`) performs a synchronous blocking delay. While trapped in this function, the CPU cannot return to `main()` to evaluate `ticks_pending` or execute `task_sampling()`, causing $1\text{ kHz}$ timer ticks to backlog and severely degrading period determinism.
+* **Degradation under Blocking Command (`calib`):** In a non-preemptive superloop, tasks execute cooperatively to completion. The calibration routine inside `task_console()` (`firmware/superloop/src/main.c`) performs a synchronous blocking delay. While trapped in this function, the CPU cannot return to `main()` to evaluate `ticks_pending` or execute `task_sampling()`, causing $1\text{ kHz}$ timer ticks to backlog and severely degrading period determinism.
+
+#### Local analyzer evidence
+
+![Lab 2 Task A analyzer overview](<Labs RTS/Evidencias lab 2 RTS/Session A.png>)
+
+<details>
+<summary>Lab 2 Tasks B and C captures</summary>
+
+![Lab 2 Task B capture 1 — condition not confirmed](<Labs RTS/Evidencias lab 2 RTS/Session B 1.png>)
+
+![Lab 2 Task B capture 2 — condition not confirmed](<Labs RTS/Evidencias lab 2 RTS/Session B 2.png>)
+
+![Lab 2 Task C blocking-command capture](<Labs RTS/Evidencias lab 2 RTS/Session C.png>)
+
+</details>
+
+The B1/B2 screenshots show analyzer activity, but their labels and visible channels do not establish which one is the default build and which one is the cache-off build. They are presence evidence only and are not used to assign either screenshot to a quantitative condition.
 
 #### Baseline Reading
 
-> *El superloop cooperativo garantiza un tiempo de ejecución eficiente para tareas de muestreo periódicas en estado de reposo, pero presenta una severa falta de aislamiento temporal que degrada el determinismo del sistema ante cualquier operación de entrada/salida o comando bloqueante.*
+> The cooperative superloop can execute periodic sampling efficiently at idle, but it lacks temporal isolation: blocking I/O or a long command degrades determinism for the entire loop.
 
 ### Week 3 — S3 baseline and silicon comparison
 
@@ -217,8 +236,8 @@ Increasing clock frequency from 80 MHz to 240 MHz accelerates purely computation
 * **Sampling:** Moving `task_sampling()` into `sampling_thread` with priority `SAMPLING_PRIO = 2` (preemptive over `main` running at `CONFIG_MAIN_THREAD_PRIORITY = 10`) guarantees that when `tick_isr` posts to `tick_q`, the Zephyr RTOS scheduler immediately preempts `main`—even during a blocking `calib` loop—executes `task_sampling()`, and resumes `main`. Thus, sampling jitter drops to $3.5\ \mu\text{s}$ and `backlog_peak` remains at $0\text{ ticks}$.
 * **Control:** `task_control()` remains inside the lower-priority `main` superloop. When `calib` performs 1000 rounds of `k_busy_wait(400)`, `main` is blocked from evaluating `control_pending`, causing the maximum control period to stretch to $1293\text{ ms}$.
 
-4. **Shared State Access and Atomic Memory Operations:**
-State variables `pressure_mv`, `estop`, and `setpoint_mv` are accessed across `sampling_thread` and `main`. On 32-bit architectures like the Xtensa LX7 (ESP32-S3), naturally aligned 32-bit scalar memory reads and writes are single-cycle atomic operations at the hardware memory bus level, preventing torn reads or writes across threads without requiring explicit mutex locks.
+4. **Shared State Access and Synchronization:**
+Naturally aligned scalar reads and writes may avoid torn values on the target, but that property does not replace synchronization. It does not provide ordering, compound-operation atomicity, race freedom, or a coherent multi-field snapshot. Shared state such as `pressure_mv`, `estop`, and `setpoint_mv` still requires an explicit concurrency design (atomics with defined memory semantics, ownership, or a suitable lock/message mechanism).
 
 ### Week 4 — The full migration and the A/B
 
@@ -236,11 +255,11 @@ State variables `pressure_mv`, `estop`, and `setpoint_mv` are accessed across `s
 #### Context Switch Overhead Analysis (Task C)
 
 * **Measured Gap (`instr_samp` falling → `instr_ctrl` rising):** $2.4\ \mu\text{s}$.
-* **Overhead Calculation:** At nominal operational workload (1000 sampling thread activations/s + 100 control thread activations/s + ~200 background thread switches/s ≈ 1300 context switches/s):
+* **Exploratory overhead estimate:** If the workload were 1000 sampling activations/s + 100 control activations/s + an assumed ~200 background switches/s, the total would be approximately 1300 switches/s:
 
 $$\text{CPU Overhead} = 1300\text{ switches/s} \times 2.4\ \mu\text{s/switch} = 3120\ \mu\text{s/s} \approx 0.312\%$$
 
-The scheduling context-switch overhead accounts for less than **0.32%** of total CPU capacity.
+This yields **0.312%** only as an unvalidated estimate. The $\sim200$ background switches/s and total switch rate were not measured, and the visible GPIO gap is not necessarily the complete per-switch scheduler cost, so this calculation is not accepted as a capacity measurement.
 
 #### Stack High-Water Marks (Task D)
 
@@ -269,23 +288,26 @@ Thread analyze:
 
 CTF tracing was enabled on the ESP32-S3 streaming trace packets out of the UART port at 4 Mbaud. System threads (`sampling_tid`, `control_tid`, `console_tid`, `display_tid`, `telemetry_tid`) and hardware interrupts (`ISR`) were successfully captured and identified in Google Perfetto (`ui.perfetto.dev`).
 
+<details>
+<summary>Task A — named-thread trace overview (7 screenshots)</summary>
+
+![Lab 5 Task A overview](<Labs RTS/Evidencias lab 5 RTS/Task A/Captura de pantalla_20261107_233006.png>)
+![Lab 5 Task A view 2](<Labs RTS/Evidencias lab 5 RTS/Task A/Captura de pantalla_20261107_233024.png>)
+![Lab 5 Task A view 3](<Labs RTS/Evidencias lab 5 RTS/Task A/Captura de pantalla_20261107_233049.png>)
+![Lab 5 Task A view 4](<Labs RTS/Evidencias lab 5 RTS/Task A/Captura de pantalla_20261107_233500.png>)
+![Lab 5 Task A view 5](<Labs RTS/Evidencias lab 5 RTS/Task A/Captura de pantalla_20261107_233519.png>)
+![Lab 5 Task A view 6](<Labs RTS/Evidencias lab 5 RTS/Task A/Captura de pantalla_20261107_233541.png>)
+![Lab 5 Task A view 7](<Labs RTS/Evidencias lab 5 RTS/Task A/Captura de pantalla_20261107_233559.png>)
+
+</details>
+
 #### Measurement Comparison Matrix (Trace vs. GPIO)
 
 | Measurement | Prediction | Your value (Trace / Analyzer) | Contrast / Reference |
 | --- | --- | --- | --- |
-| Context switch per the trace | $15.0\ \mu\text{s}$ | **$30.69\ \mu\text{s} - 32.52\ \mu\text{s}$**
-
- | vs. GPIO (wk 4): **$2.4\ \mu\text{s}$** |
-| Tick ISR → sampling start per the trace | $10.0\ \mu\text{s}$ | **$31.50\ \mu\text{s} - 32.52\ \mu\text{s}$**
-
- | vs. `lat_peak_us`: **$6.0\ \mu\text{s}$** |
-| Per-thread CPU load (%) in normal operation | 100% total | **`sampling_tid`: 0.81%** <br>
-
-<br> **`control_tid`: 0.20%** <br>
-
-<br> **`console_tid`: 0.30%** <br>
-
-<br> **`display_tid`: <0.05%** | sums $\approx 100\%$ with `idle` (**98.64%**) and tracer |
+| Context switch per the trace | $15.0\ \mu\text{s}$ | **$30.69\ \mu\text{s}$–$32.52\ \mu\text{s}$** | vs. GPIO (Week 4): **$2.4\ \mu\text{s}$** |
+| Tick ISR → sampling start per the trace | $10.0\ \mu\text{s}$ | **$31.50\ \mu\text{s}$–$32.52\ \mu\text{s}$** | vs. `lat_peak_us`: **$6.0\ \mu\text{s}$** |
+| Per-thread CPU load (%) in normal operation | 100% total | `sampling_tid`: **0.81%**; `control_tid`: **0.20%**; `console_tid`: **0.30%**; `display_tid`: **<0.05%** | sums $\approx100\%$ with `idle` (**98.64%**) and tracer |
 | Tracing overhead on max sampling jitter | $2.0\ \mu\text{s}$ | **$2.10\ \mu\text{s}$** ($\text{ON: } 3.20\ \mu\text{s} \text{ vs. OFF: } 1.10\ \mu\text{s}$) | analyzer, tracing ON vs. OFF |
 
 #### The Story of One Preemption (Task B)
@@ -308,6 +330,22 @@ CTF tracing was enabled on the ESP32-S3 streaming trace packets out of the UART 
 
 * **CPU Return:** Control yields back to `console_tid`, resuming CLI parsing.
 
+<details>
+<summary>Task B — preemption trace selections (8 screenshots)</summary>
+
+![Lab 5 Task B selection 1](<Labs RTS/Evidencias lab 5 RTS/Task B/Captura de pantalla_20261107_233844.png>)
+![Lab 5 Task B selection 2](<Labs RTS/Evidencias lab 5 RTS/Task B/Captura de pantalla_20261107_233929.png>)
+![Lab 5 Task B selection 3](<Labs RTS/Evidencias lab 5 RTS/Task B/Captura de pantalla_20261107_233952.png>)
+![Lab 5 Task B selection 4](<Labs RTS/Evidencias lab 5 RTS/Task B/Captura de pantalla_20261107_234003.png>)
+![Lab 5 Task B selection 5](<Labs RTS/Evidencias lab 5 RTS/Task B/Captura de pantalla_20261107_234015.png>)
+![Lab 5 Task B selection 6](<Labs RTS/Evidencias lab 5 RTS/Task B/Captura de pantalla_20261107_234048.png>)
+![Lab 5 Task B selection 7](<Labs RTS/Evidencias lab 5 RTS/Task B/Captura de pantalla_20261107_234101.png>)
+![Lab 5 Task B selection 8 — ambiguous 35 ns selection](<Labs RTS/Evidencias lab 5 RTS/Task B/Captura de pantalla_20261107_234114.png>)
+
+</details>
+
+Task B8 displays a `35 ns` selection whose boundaries and semantic event are ambiguous. It is retained for completeness but is not used as quantitative evidence.
+
 
 
 
@@ -315,14 +353,14 @@ CTF tracing was enabled on the ESP32-S3 streaming trace packets out of the UART 
 * Typing `calib` triggers a massive stream of console output logs and high-frequency UART activity. The CTF trace subsystem uses an in-memory ring buffer to log events before UART transmission at 4 Mbaud. The volume of calibration events quickly exceeds the UART output rate, causing a **trace buffer overflow**. As a result, only the first $\sim 75\text{ ms}$ of trace events are preserved before dropped-event flags are set.
 
 
-3. **Behavior at the 10th Tick ($t \approx 41.66\text{ ms}$):**
-* At the 10th system tick ($10 \times 4.166\text{ ms} = 41.66\text{ ms}$), the timer calls `k_sem_give` to release the control loop semaphore. Instead of returning directly to `console_tid`, the scheduler transfers CPU execution to **`control_tid`** (running at $24\text{ Hz}$), which executes its control algorithm for **$81.37\ \mu\text{s} - 83.88\ \mu\text{s}$** before returning to lower-priority tasks.
+3. **Behavior at the 10th 1 kHz sampling tick ($t \approx 10\text{ ms}$):**
+* The canonical kernel source uses a $1\text{ ms}$ sampling period and releases control every tenth sample, so `k_sem_give` occurs every $10\text{ ms}$ ($100\text{ Hz}$), not every $41.66\text{ ms}$ ($24\text{ Hz}$). The trace story is that the scheduler can transfer execution to the higher-priority `control_tid` before returning to lower-priority work. The screenshots are not treated as proof of the previously reported $81.37$–$83.88\ \mu\text{s}$ range unless the relevant event boundaries are explicitly selected.
 
 
 
 
 4. **Why Trace vs. GPIO Measurements Differ (Analysis):**
-* **GPIO Analyzer:** Measures physical pin level changes. It captures pure execution boundaries without software overhead, yielding context-switch gaps of **$2.4\ \mu\text{s}$** and interrupt latency of **$6.0\ \mu\text{s}$**.
+* **GPIO Analyzer:** Measures physical pin-level instrumentation with substantially less semantic visibility than tracing. The report records a **$2.4\ \mu\text{s}$** visible gap and **$6.0\ \mu\text{s}$** interrupt latency; these values include the firmware's GPIO instrumentation and should not be described as literally overhead-free.
 * **Software Tracing (CTF):** Captures event logging hooks inside kernel functions. The trace values (**$30.69\ \mu\text{s} - 32.52\ \mu\text{s}$** for context switches and **$31.50\ \mu\text{s} - 32.52\ \mu\text{s}$** for ISR-to-thread latency) include the software overhead of serializing CTF event records, updating timestamp registers, and executing tracing macros inside kernel schedulers.
 
 
@@ -336,8 +374,22 @@ CTF tracing was enabled on the ESP32-S3 streaming trace packets out of the UART 
 | **Tracing ON** | **$3.20\ \mu\text{s}$** | Software perturbation introduced by CTF event logging hooks |
 | **Delta ($\Delta$ Overhead)** | **$+2.10\ \mu\text{s}$** | Net timing penalty imposed by the tracing subsystem |
 
+<details>
+<summary>Task C — tracing OFF/ON analyzer series (6 screenshots)</summary>
+
+![Lab 5 Task C tracing OFF 1](<Labs RTS/Evidencias lab 5 RTS/Task C/Tracing Off.png>)
+![Lab 5 Task C tracing OFF 2](<Labs RTS/Evidencias lab 5 RTS/Task C/Tracing Off(1).png>)
+![Lab 5 Task C tracing OFF 3](<Labs RTS/Evidencias lab 5 RTS/Task C/Tracing Off(2).png>)
+![Lab 5 Task C tracing ON 1](<Labs RTS/Evidencias lab 5 RTS/Task C/Tracing On.png>)
+![Lab 5 Task C tracing ON 2](<Labs RTS/Evidencias lab 5 RTS/Task C/Tracing On(1).png>)
+![Lab 5 Task C tracing ON 3](<Labs RTS/Evidencias lab 5 RTS/Task C/Tracing On(2).png>)
+
+</details>
+
+These screenshots distinguish tracing OFF and ON waveform series, but they do not display pulse-statistics maxima or cursor measurements. They do not independently establish the reported maximum jitter values; the numerical table requires the underlying analyzer statistics/export for validation.
+
 1. **Quantification of Overhead:**
-   Enabling CTF tracing increases worst-case sampling jitter by **$2.10\ \mu\text{s}$** (from $1.10\ \mu\text{s}$ to $3.20\ \mu\text{s}$). While the sampling thread continues to meet its hard real-time requirement ($\text{jitter} \le 50\ \mu\text{s}$, verifying **REQ-CTRL-01**), the software instrumentation introduces measurable temporal perturbation.
+   The report records a **$2.10\ \mu\text{s}$** increase (from $1.10\ \mu\text{s}$ to $3.20\ \mu\text{s}$). If confirmed by the missing analyzer statistics, the result remains below the $50\ \mu\text{s}$ jitter limit in **REQ-CTRL-03**. The supplied screenshots alone do not establish those maxima.
 
 2. **Root-Cause Analysis (Why the Observer Perturbs):**
    - **Trace Hook Execution:** Every thread context switch, queue operation, and timer ISR executes inline CTF logging macros that write timestamped event records to memory.
@@ -345,13 +397,13 @@ CTF tracing was enabled on the ESP32-S3 streaming trace packets out of the UART 
    - **UART FIFO Pressures:** High-rate serial streaming over `uart0` consumes additional CPU cycles for UART TX buffer management.
 
 3. **Synthesis (GPIO vs. Tracing):**
-   - **GPIO + Logic Analyzer ("The Judge of Numbers"):** Non-intrusive physical measurement. It provides exact, unperturbed timing numbers ($1.10\ \mu\text{s}$ jitter, $2.4\ \mu\text{s}$ context switch) without altering firmware behavior.
-   - **CTF Tracing ("The Judge of the Story"):** Intrusive software measurement. While it adds a small timing overhead ($+2.10\ \mu\text{s}$), it reveals thread names, exact preemption instances, state transitions, and root causes that an external pin analyzer cannot see inside the kernel.
+   - **GPIO + Logic Analyzer ("The Judge of Numbers"):** Low-intrusion physical observation of instrumented task boundaries. It reports timing at the pins but still includes the cost and placement of GPIO toggles.
+   - **CTF Tracing ("The Judge of the Story"):** Intrusive software measurement that reveals thread names, preemption instances, state transitions, and root causes that an external pin analyzer cannot see. The report records $+2.10\ \mu\text{s}$ overhead, but the supplied screenshots do not independently establish that maximum.
 
 
 ### Week 6 — Schedulability, response time, and priority inversion
 
-This section completes the analytical part of §4 with the data available in this report and in the Week 6 guide. Where the guide requires analyzer captures or parameters supplied separately in class, the corresponding numerical result remains explicitly open rather than being inferred from unavailable evidence.
+This section completes the detailed analysis supporting §4 with the data available in this report and in the Week 6 guide. Local analyzer captures are present, but where they are unannotated or omit the required duration, cursor, counter, or comparison case, the corresponding numerical result remains explicitly open.
 
 #### Task A — Fig. 4.13 under RM and EDF
 
@@ -414,7 +466,13 @@ $$
 U = 0.9714286 \le 1.
 $$
 
-Therefore the task set is schedulable under ideal preemptive EDF, despite failing under RM. In the Zephyr experiment, each absolute deadline must be assigned immediately after wake-up and before the thread can be selected using a stale deadline. The guide requires analyzer evidence of the RM miss and a 60 s EDF run with no misses; neither capture nor a measured miss counter is present in the supplied report, so the theoretical verdict is established but the board-level evidence remains pending.
+Therefore the task set is schedulable under ideal preemptive EDF, despite failing under RM. In the Zephyr experiment, each absolute deadline must be assigned immediately after wake-up and before the thread can be selected using a stale deadline.
+
+![Lab 6 Task A capture 1 — scheduler not identified](<Labs RTS/Evidencias lab 6 RTS/Task A/task a.png>)
+
+![Lab 6 Task A capture 2 — scheduler and duration not identified](<Labs RTS/Evidencias lab 6 RTS/Task A/task a2.png>)
+
+The two Task A captures are present but insufficient/unannotated: they show `Tau_1`/`Tau_2` activity but do not identify RM versus EDF, annotate the RM miss at $t=7\text{ ms}$, show a miss counter, or establish a continuous 60 s EDF run. The theoretical verdict is established; board-level verification remains pending.
 
 #### Task B — Priority inversion and the PI-mutex bound
 
@@ -440,7 +498,7 @@ R_{ctrl}^{(1)}
 =116.62\ \mu\text{s},
 $$
 
-and the next iteration is unchanged. Therefore the known periodic set bounds the no-contention control response at $116.62\ \mu\text{s}$, below its $1000\ \mu\text{s}$ deadline.
+and the next iteration is unchanged. Therefore the known periodic set bounds the no-contention control response at $116.62\ \mu\text{s}$, below its canonical $10\text{ ms}$ deadline.
 
 Replacing the semaphore with `k_mutex` activates Zephyr priority inheritance: while control is blocked, the console lock owner temporarily inherits control's priority. Medium-priority work can no longer extend the blocking interval, so control is blocked by at most one low-priority critical section of measured width $B$:
 
@@ -450,13 +508,22 @@ R_{ctrl}^{(k+1)} = 82.78 + B
 \quad [\mu\text{s}].
 $$
 
-If the converged response remains below one sampling period, this reduces to
+For short blocking that keeps the response below one sampling period, this reduces to $R_{ctrl}=116.62+B\ \mu\text{s}$. The canonical control deadline is nevertheless $10\text{ ms}$, not $1\text{ ms}$. At the deadline boundary, ten sampling jobs interfere, giving
 
 $$
-R_{ctrl}=116.62+B\quad [\mu\text{s}],
+B_{max}=10000-82.78-10(33.84)=9578.82\ \mu\text{s}.
 $$
 
-and meeting the $1000\ \mu\text{s}$ control deadline requires $B\le883.38\ \mu\text{s}$ in that interval. The required GPIO width for the low thread's critical section, the three annotated captures, and measured control responses for the semaphore and mutex cases are not present in the supplied material. A numerical inversion delay, a numerical mutex response, and an empirical ADR-002 therefore cannot be claimed yet. The evidence-supported policy is nevertheless clear: shared resources used across priorities require a PI mutex, never a bare binary semaphore.
+<details>
+<summary>Task B — local lock captures (3 screenshots)</summary>
+
+![Lab 6 Task B capture 1](<Labs RTS/Evidencias lab 6 RTS/Task B/task b.png>)
+![Lab 6 Task B capture 2](<Labs RTS/Evidencias lab 6 RTS/Task B/task b2.png>)
+![Lab 6 Task B capture 3](<Labs RTS/Evidencias lab 6 RTS/Task B/task b3.png>)
+
+</details>
+
+The three captures are present but insufficient/unannotated. They do not provide cursors for the low thread's critical-section width $B$, label the no-contention/semaphore/mutex regimes, or demonstrate the full low-takes-lock → high-blocks → medium-preempts sequence. A numerical inversion delay, a numerical mutex response, and empirical closure of ADR-002 cannot yet be claimed. The evidence-supported policy remains: across priorities, use a PI mutex rather than a bare binary semaphore as a lock.
 
 #### Task C — `calib` capacity and the e-stop path
 
@@ -474,31 +541,31 @@ For the measured periodic tasks above the console, using the conservative trace 
 $$
 U_{known}
 =\frac{33.84}{1000}+\frac{82.78}{10000}
-=0.03384+0.008278
-=0.042118\approx4.21\%.
++\frac{47.39}{500000}+\frac{62.41}{1000000}
+=0.04227519\approx4.23\%.
 $$
 
 Those tasks consume
 
 $$
-0.042118\times1000\text{ ms}=42.118\text{ ms}
+0.04227519\times1000\text{ ms}=42.27519\text{ ms}
 $$
 
 per second and leave
 
 $$
-1000-42.118=957.882\text{ ms}
+1000-42.27519=957.72481\text{ ms}
 $$
 
 for lower-priority execution. Against this known subset, the original 400 ms busy-wait fits within the 1 s deadline with
 
 $$
-957.882-400=557.882\text{ ms}
+957.72481-400=557.72481\text{ ms}
 $$
 
-of analytical slack. This is not a verdict for Daniela's proposed load: the periods and execution times of her two tasks are stated as “given in class” but are absent from both supplied files. In addition, `flow_wq` is event-driven and the display and telemetry periods are not documented, so their demand cannot be added without inventing parameters. The Liu & Layland test, hyperbolic test, and final fit decision for Daniela remain open for that reason.
+of analytical slack. This includes the documented $500\text{ ms}$ display and $1\text{ s}$ telemetry periods with their reported trace times, but it is not a verdict for Daniela's proposed load: the periods and execution times of her two tasks are stated as “given in class” and are absent from the supplied material. In addition, `flow_wq` is event-driven without a bounded arrival model, and the console's event-dependent execution demand is not represented as a periodic budget. The Liu & Layland test, hyperbolic test, and final fit decision for Daniela remain open for those reasons.
 
-After replacing `k_busy_wait(400)` with `k_usleep(400)`, the console no longer consumes 400 ms of CPU; it blocks during each settle. At the configured 100 µs kernel tick, 400 µs is four ticks, so the requested sleeps contribute a nominal minimum duration of
+Under the proposed replacement of `k_busy_wait(400)` with `k_usleep(400)`, the console would no longer consume 400 ms of CPU; it would block during each settle. At the configured 100 µs kernel tick, 400 µs is four ticks, so the requested sleeps contribute a nominal minimum duration of
 
 $$
 1000\times400\ \mu\text{s}=400\text{ ms},
@@ -525,7 +592,7 @@ $$
 
 This exceeds the Week 6 $5\text{ ms}$ target by $7\text{ ms}$, independently of the low measured CPU utilization. It also shows why utilization alone cannot prove the safety path: the failure is caused by release phasing across tasks, not processor saturation.
 
-After moving `duty_pct = 0` into the e-stop branch in `task_sampling`, the PWM write a few lines later executes in the same sampling job. The inter-task waits collapse to
+Under the proposed move of `duty_pct = 0` into the e-stop branch in `task_sampling`, the PWM write a few lines later would execute in the same sampling job. The inter-task waits would collapse to
 
 $$
 R_{estop,after}\le T_{samp}+C_{same\ job}.
@@ -538,16 +605,29 @@ R_{estop,after}\approx1000\ \mu\text{s}+33.84\ \mu\text{s}
 =1033.84\ \mu\text{s}\approx1.034\text{ ms}<5\text{ ms}.
 $$
 
-The arithmetic supports ADR-005's source-level design: sleep rather than spin in `calib`, and close the valve in the detecting sampling job. However, the report does not contain the required five-trip before/after maxima, valve GPIO captures, or an e-stop-specific WCET measurement. Therefore $12\text{ ms}$ and $1.034\text{ ms}$ are analytical bounds/estimates from the documented periods and available sampling timing, not substitutes for the missing physical evidence.
+![Lab 6 Task C capture — appears post-fix](<Labs RTS/Evidencias lab 6 RTS/Task C/task c1.png>)
+
+The arithmetic supports ADR-005's design: sleep rather than spin in `calib`, and close the valve in the detecting sampling job. The Task C screenshot is present but insufficient/unannotated: it appears to show a post-fix detection/valve transition, but it has no cursor measurement, no five-trip maximum, and no before capture. Therefore $12\text{ ms}$ and $1.034\text{ ms}$ remain analytical bounds/estimates from documented periods and available sampling timing, not substitutes for physical before/after evidence.
 
 
 ## 4. Schedulability analysis
 
-U = ΣC_i/T_i with **measured** C_i; test used (RM / hyperbolic / EDF); RTA as a
-script with its output; blocking B_i if there are mutexes. (Formulas: READINGS.md,
-"The math that does get used".)
+### Current verdict
+
+| Scope | Analysis | Verdict | Evidence status |
+| --- | --- | --- | --- |
+| Fig. 4.13 task set | $U=2/5+4/7=0.9714$; RM exact RTA gives $R_2=8\text{ ms}>D_2=7\text{ ms}$; implicit-deadline EDF has $U\le1$ | RM misses; ideal preemptive EDF is schedulable | Theory complete; local captures do not identify RM/EDF or prove the 60 s EDF run |
+| Known periodic node subset | Sampling, control, display, and telemetry give $U=0.04227519$ | Known subset uses about 4.23% CPU by the reported trace values | Flow arrivals, console demand, and Daniela's tasks are not bounded, so this is not whole-node utilization |
+| Control, no contention | $R_{ctrl}=82.78+\lceil R/1000\rceil33.84=116.62\ \mu\text{s}$ | Below the canonical $10\text{ ms}$ deadline | Analytical; no dedicated measured response supplied |
+| Control with PI mutex | $R_{ctrl}=82.78+B+\lceil R/1000\rceil33.84$ | Requires measured $B$; boundary $B\le9578.82\ \mu\text{s}$ for $R\le10\text{ ms}$ | Captures present but do not measure $B$ or label all regimes |
+| `calib` and e-stop | Pre-fix `calib` demand: $400\text{ ms}$ CPU; e-stop analytical path: $12\text{ ms}$ before, approximately $1.034\text{ ms}$ after the proposed source fix | Pre-fix e-stop violates REQ-CTRL-02; proposed same-job close is analytically compatible | Before/after maxima, one-settle CPU cost, and five-trip evidence remain missing |
+
+Daniela's additional-load verdict remains open because her two task parameters and a bounded flow-arrival model are not available; console demand is also event-dependent. An RTA formula is documented above, but the required standalone script and output were not supplied and are not claimed. Week 12 CAN frame planning and end-to-end bus analysis are also not yet supported by material in this local unit.
 
 ## 5. Functional safety (final project)
 
-Declared safe state (failure ⇒ valve closed), watchdog, and the evidence of the
-fail-safe firing.
+The declared safe state is **valve closed**. REQ-CTRL-02 requires overpressure to close the valve in less than $5\text{ ms}$; the proposed same-sampling-job design has an analytical estimate below that deadline. A watchdog design, hardware fail-safe firing trace, and repeated physical e-stop maxima have not been supplied, so final-project functional-safety verification remains open.
+
+## 6. Agent-built components (final project)
+
+No Hub GUI, routing component, `spec/hub-soft.md`, agent implementation log, or component timing measurement is present in this local unit. AI assistance in this update was limited to evidence organization and consistency review, as disclosed in the report header; no measurement is attributed to AI. Agent-built component requirements, deviations, and measured compliance therefore remain pending rather than being invented.
